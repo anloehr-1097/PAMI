@@ -93,22 +93,43 @@ class GaussianDistribution(DistributionType):
     def __init__(self, shape : tuple, mu : torch.Tensor, sigma : torch.Tensor) -> None:
         super().__init__()
         
-        assert shape[0] == mu.shapep[0], "Wrong shape mu"
-        assert shape[0] == sigma.shapep[0], "Wrong shape sigma"
-        assert sigma.shape[0] == sigma.shape[1], "Expected sigma to be a matrix"
+        assert shape[0] == mu.shape[0], "wrong shape mu"
+        assert shape[0] == sigma.shape[0], "wrong shape sigma"
+        if not len(sigma.shape) == 1:
+            assert sigma.shape[0] == sigma.shape[1], "expected sigma to be a matrix"
 
         self.mu = mu
         self.sigma = sigma
+        self.shape = shape 
 
 
-    def __call__(self, n : int=1) -> torch.Tensor:
+    def __call__(self) -> torch.Tensor:
         # get n samples from distribution 
-        param_ind_dist = D.Normal(torch.Tensor(np.zeros(n)), torch.Tensor(np.eye(n))) 
+        param_ind_dist = D.multivariate_normal.MultivariateNormal(
+            loc=torch.Tensor(np.zeros(self.shape[0])),
+            covariance_matrix=torch.Tensor(np.eye(self.shape[0])))
+
+
+        # param_ind_dist = D.Normal(torch.Tensor(np.zeros(self.shape[0])), torch.Tensor(np.eye(self.shape[0]))) 
         sample = param_ind_dist.rsample()
 
-        assert sample.shape[0] == self.mu.shape[0], "Shape mismatch"
+        # assert sample.shape[0] == self.mu.shape[0], f"Shape mismatch: Shape of sample={sample.shape[0]}, Shape of mu={self.mu.shape[0]}"
 
-        return self.sigma * sample + self.mu
+        return self.sigma @ sample + self.mu
+
+
+    def generate(self, shape : tuple, mu : torch.Tensor, sigma : torch.Tensor):
+
+        super().__init__()
+        
+        assert shape[0] == mu.shape[0], "wrong shape mu"
+        assert shape[0] == sigma.shape[0], "wrong shape sigma"
+        if not len(sigma.shape) == 1:
+            assert sigma.shape[0] == sigma.shape[1], "expected sigma to be a matrix"
+
+        self.mu = mu
+        self.sigma = sigma
+        return None
 
 
 
@@ -147,8 +168,8 @@ class Encoder(nn.Module):
 
         mu = x[:self.num_latent]
         sigma = x[self.num_latent:]
-        self.dist = self.distr(shape=self.Tensor([self.num_latent]), mu=self.mu, sigma=self.sigma)
-        return self.dist()
+        self.distr = self.distr.generate(shape=(self.num_latent, 1), mu=self.mu, sigma=self.sigma)
+        return self.distr()
 
 
 
