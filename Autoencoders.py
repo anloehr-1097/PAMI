@@ -112,9 +112,11 @@ class GaussianDistribution(DistributionType):
 
         # param_ind_dist = D.Normal(torch.Tensor(np.zeros(self.shape[0])), torch.Tensor(np.eye(self.shape[0]))) 
         sample = param_ind_dist.rsample()
+        sample = torch.unsqueeze(sample, 1)
+        print(sample)
+        print(self.sigma)
 
         # assert sample.shape[0] == self.mu.shape[0], f"Shape mismatch: Shape of sample={sample.shape[0]}, Shape of mu={self.mu.shape[0]}"
-
         return self.sigma @ sample + self.mu
 
 
@@ -177,12 +179,33 @@ class Encoder(nn.Module):
 
 class Decoder:
     """General Decoder Class to be used in VAEs"""
-    def __init__(self) -> None:
+    def __init__(self, distr_type: DistributionType, num_latent : int) -> None:
+        super.__init__()
+        # define Model arch
+        self.num_latent = num_latent
+        self.f1 = nn.Linear(10, 784)
+        self.f2 = F.tanh()
+        self.f3 = nn.Linear(784, 2*800*800)  # one for mu one for sigma for each latent
+        self.distr = distr_type  # must feature the __call__ method
+
+    def forward(self, x : torch.Tensor):
+        assert x.shape[0] == 10
+        x = self.f1(x)
+        x = self.f2(x)
+        x = self.f3(x)
+
+        # sampling
+
+        mu = x[:800*800]
+        sigma = x[800*800:]
+        self.distr = self.distr.generate(shape=(800*800, 1), mu=mu, sigma=sigma)
+        return self.distr()
         pass
 
 
 class VAE:
-    def __init__(self, enc: Encoder, dec: Decoder, loss_fun) -> None:
+    def __init__(self, enc: Encoder, dec: Decoder, prior, loss_fun) -> None:
+
         pass
 
 def variational_lower_bound(x : torch.Tensor, enc : Encoder, dec: Decoder) -> torch.Tensor:
