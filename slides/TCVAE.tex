@@ -116,7 +116,15 @@
     \begin{titlepage}
     \end{titlepage}
   \end{frame}
-
+  \begin{frame}
+    \frametitle{Structure of the presentation (info sheet)}
+    \begin{itemize}
+      \item background/ preliminary work
+      \item approach
+      \item results
+      \item discussion and conclusion
+    \end{itemize}
+  \end{frame}
   %intro to generative modelling. The problem statement
   \section{Representation Learning and Generative Modeling}
     \begin{frame}
@@ -159,7 +167,7 @@
         \end{itemize}
       \end{frame}
 
-    \section{Autoencoders}
+    \section{(Variational) Autoencoders}
     \begin{frame}
       \frametitle{Means to learn latent representations}
       \begin{itemize}
@@ -172,7 +180,7 @@
     \end{frame}
 
     \begin{frame}
-      \frametitle{Reminder: Autoencoders}
+      \frametitle{Autoencoders}
       % source autoencoder illustration
       %https://miro.medium.com/v2/resize:fit:4266/1*QEmCZtruuWwtEOUzew2D4A.png
       %\begin{center}
@@ -195,9 +203,61 @@
         \item Encoder \& decoder parametrize probability distributions over latent space and data respectively
       \end{itemize}
       % explain the graphics
+
+    \end{frame}
+    \begin{frame}
+      \frametitle{Training Variational Autoencoders}
+      Inspecting Encoder and Decoder
+      The variational lower bound (ELBO)
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{Shortcomings}
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{Trying to Fix VAEs}
+      $\beta$-VAEs and alternatives
     \end{frame}
 
 
+  \section{TC-VAEs}
+    \begin{frame}
+      \frametitle{Total Correlation}
+      Total correlation, mutual information and so on
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{A new objective}
+      Using TC as an objective, intuition
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{A convex lower bound}
+      Presenting the TC convex lower bound actually used
+    \end{frame}
 
 
+  \section{Experiments and Results}
+    \begin{frame}
+      \frametitle{Experiment Design}
+      datasets, bsaeline models compared against, evaluation metrics/ scores
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{Results}
+    \end{frame}
+
+  \section{Discussion and Conclusion}
+    \begin{frame}
+      \frametitle{Discussion and Conclusion}
+      \begin{itemize}
+        \item Inspiration from Multiview representation learning (OOD generative factors correspond to missing views)
+        \item Uncovering OOD generative factors $\equiv$ inferring missing views
+        \item Experimental validation that TC-VAE is capable of uncovering OOD generative factors
+        \item missing view also problematic for downstream tasks. underrepresented views may be seen as outliers
+        \item main shortcoming: Terms appearing as part of the bound do promote conflicting behavior during minization
+        \item unbalanced generative factors in dataset $\implies$ disentanglement deteriorates.
+      \end{itemize}
+    \end{frame}
 \end{document}
