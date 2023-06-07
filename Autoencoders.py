@@ -1,11 +1,9 @@
 """This is a implementation of Variational Autoencoders."""
 
-from typing import Any
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.distributions as D
-import numpy as np
+from future import *
 
 def main():
     """main function"""
@@ -78,45 +76,16 @@ class VAE(nn.Module):
 
 
 # only serves as a parent class to concrete distributions 
-class DistributionType:
-    # abstract distribution type allowing sampling operations
-    def __init__(self) -> None:
-        pass
-
-
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        pass
-
+class DistributionType: ...
 
 # one of which is a Gaussian distribution
-class GaussianDistribution(DistributionType):
-    def __init__(self, shape : tuple, mu : torch.Tensor, sigma : torch.Tensor) -> None:
-        super().__init__()
-        
-        assert shape[0] == mu.shapep[0], "Wrong shape mu"
-        assert shape[0] == sigma.shapep[0], "Wrong shape sigma"
-        assert sigma.shape[0] == sigma.shape[1], "Expected sigma to be a matrix"
-
-        self.mu = mu
-        self.sigma = sigma
-
-
-    def __call__(self, n : int=1) -> torch.Tensor:
-        # get n samples from distribution 
-        param_ind_dist = D.Normal(torch.Tensor(np.zeros(n)), torch.Tensor(np.eye(n))) 
-        sample = param_ind_dist.rsample()
-
-        assert sample.shape[0] == self.mu.shape[0], "Shape mismatch"
-
-        return self.sigma * sample + self.mu
-
+class GaussianDistribution(DistributionType): ...
 
 
 class BernoulliDistribution(DistributionType): ...
-# TODO: implement this
 
 
-class Encoder(nn.Module): 
+class Encoder: 
     """General Encoder Class to be used in VAEs.
     
     The encoder acts on the inputs x, is parametrized by phi and produces a probability
@@ -128,30 +97,9 @@ class Encoder(nn.Module):
 
     """
 
-    def __init__(self, distr_type: DistributionType, num_latent : int) -> None:
-        super.__init__()
-        # define Model arch
-        self.num_latent = num_latent
-        self.f1 = nn.Linear(800*800, 784)
-        self.f2 = F.relu()
-        self.f3 = nn.Linear(784, 2*num_latent)  # one for mu one for sigma for each latent
-        self.distr = distr_type  # must feature the __call__ method
+    def __init__(self, distr_type: DistributionType) -> None:
 
-    def forward(self, x : torch.Tensor):
-        assert x.shape[0] == 800**2
-        x = self.f1(x)
-        x = self.f2(x)
-        x = self.f3(x)
-
-        # sampling
-
-        mu = x[:self.num_latent]
-        sigma = x[self.num_latent:]
-        self.dist = self.distr(shape=self.Tensor([self.num_latent]), mu=self.mu, sigma=self.sigma)
-        return self.dist()
-
-
-
+        pass
 
 
 class Decoder:
