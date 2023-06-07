@@ -93,6 +93,7 @@ class GaussianDistribution(DistributionType):
     def __init__(self, shape : tuple, mu : torch.Tensor, sigma : torch.Tensor) -> None:
         super().__init__()
         
+<<<<<<< HEAD
         assert shape[0] == mu.shapep[0], "Wrong shape mu"
         assert shape[0] == sigma.shapep[0], "Wrong shape sigma"
         assert sigma.shape[0] == sigma.shape[1], "Expected sigma to be a matrix"
@@ -109,6 +110,47 @@ class GaussianDistribution(DistributionType):
         assert sample.shape[0] == self.mu.shape[0], "Shape mismatch"
 
         return self.sigma * sample + self.mu
+=======
+        assert shape[0] == mu.shape[0], "wrong shape mu"
+        assert shape[0] == sigma.shape[0], "wrong shape sigma"
+        if not len(sigma.shape) == 1:
+            assert sigma.shape[0] == sigma.shape[1], "expected sigma to be a matrix"
+
+        self.mu = mu
+        self.sigma = sigma
+        self.shape = shape 
+
+
+    def __call__(self) -> torch.Tensor:
+        # get n samples from distribution 
+        param_ind_dist = D.multivariate_normal.MultivariateNormal(
+            loc=torch.Tensor(np.zeros(self.shape[0])),
+            covariance_matrix=torch.Tensor(np.eye(self.shape[0])))
+
+
+        # param_ind_dist = D.Normal(torch.Tensor(np.zeros(self.shape[0])), torch.Tensor(np.eye(self.shape[0]))) 
+        sample = param_ind_dist.rsample()
+        sample = torch.unsqueeze(sample, 1)
+        print(sample)
+        print(self.sigma)
+
+        # assert sample.shape[0] == self.mu.shape[0], f"Shape mismatch: Shape of sample={sample.shape[0]}, Shape of mu={self.mu.shape[0]}"
+        return self.sigma @ sample + self.mu
+
+
+    def generate(self, shape : tuple, mu : torch.Tensor, sigma : torch.Tensor):
+
+        super().__init__()
+        
+        assert shape[0] == mu.shape[0], "wrong shape mu"
+        assert shape[0] == sigma.shape[0], "wrong shape sigma"
+        if not len(sigma.shape) == 1:
+            assert sigma.shape[0] == sigma.shape[1], "expected sigma to be a matrix"
+
+        self.mu = mu
+        self.sigma = sigma
+        return None
+>>>>>>> 2cf76b1d4d47e69a3a4f90366b8433967db52e9c
 
 
 
@@ -147,8 +189,13 @@ class Encoder(nn.Module):
 
         mu = x[:self.num_latent]
         sigma = x[self.num_latent:]
+<<<<<<< HEAD
         self.dist = self.distr(shape=self.Tensor([self.num_latent]), mu=self.mu, sigma=self.sigma)
         return self.dist()
+=======
+        self.distr = self.distr.generate(shape=(self.num_latent, 1), mu=self.mu, sigma=self.sigma)
+        return self.distr()
+>>>>>>> 2cf76b1d4d47e69a3a4f90366b8433967db52e9c
 
 
 
@@ -156,12 +203,41 @@ class Encoder(nn.Module):
 
 class Decoder:
     """General Decoder Class to be used in VAEs"""
+<<<<<<< HEAD
     def __init__(self) -> None:
+=======
+    def __init__(self, distr_type: DistributionType, num_latent : int) -> None:
+        super.__init__()
+        # define Model arch
+        self.num_latent = num_latent
+        self.f1 = nn.Linear(10, 784)
+        self.f2 = F.tanh()
+        self.f3 = nn.Linear(784, 2*800*800)  # one for mu one for sigma for each latent
+        self.distr = distr_type  # must feature the __call__ method
+
+    def forward(self, x : torch.Tensor):
+        assert x.shape[0] == 10
+        x = self.f1(x)
+        x = self.f2(x)
+        x = self.f3(x)
+
+        # sampling
+
+        mu = x[:800*800]
+        sigma = x[800*800:]
+        self.distr = self.distr.generate(shape=(800*800, 1), mu=mu, sigma=sigma)
+        return self.distr()
+>>>>>>> 2cf76b1d4d47e69a3a4f90366b8433967db52e9c
         pass
 
 
 class VAE:
+<<<<<<< HEAD
     def __init__(self, enc: Encoder, dec: Decoder, loss_fun) -> None:
+=======
+    def __init__(self, enc: Encoder, dec: Decoder, prior, loss_fun) -> None:
+
+>>>>>>> 2cf76b1d4d47e69a3a4f90366b8433967db52e9c
         pass
 
 def variational_lower_bound(x : torch.Tensor, enc : Encoder, dec: Decoder) -> torch.Tensor:
@@ -175,3 +251,7 @@ def variational_lower_bound(x : torch.Tensor, enc : Encoder, dec: Decoder) -> to
     pass
 
 
+<<<<<<< HEAD
+=======
+# TODO: implement loss function, understand how to implement variational lower bound
+>>>>>>> 2cf76b1d4d47e69a3a4f90366b8433967db52e9c
