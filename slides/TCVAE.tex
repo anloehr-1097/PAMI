@@ -153,6 +153,7 @@
         \item sufficiently informative (captures majority of data generative factors)
         \item balanced
         \item Regularity
+        \item TODO: completeness definition
         %, i.e. generative factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor
         % in the sense that even generative factors which are underrepresented in the dataset do have a correspoding latent factor
       \end{itemize}
@@ -189,7 +190,8 @@
         \caption*{Source: https://medium.com/autoencoder-for-anomaly-detection/autoencoder-for-anomaly-detection-db6178ad07b2}
         % explain graphics quickly
       \end{figure}
-      %\end{center}
+      % \end{center}
+
     \end{frame}
     \begin{frame}
       \frametitle{Variational Autoencoders}
@@ -222,30 +224,57 @@
 
 
   \section{TC-VAEs}
+
+    \begin{frame}
+      \frametitle{Shannon Entropy}
+      TODO: Definition and Intuition of Shannon Entropy
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{mutual information}
+      TODO: Definition and intuition of mutual information
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{Information Bottleneck and Deep Variational IB}
+      TODO: Definition and Intuition
+    \end{frame}
+
     \begin{frame}
       \frametitle{Total Correlation}
-      Total correlation, mutual information and so on
+      TODO: Total correlation def and intuition
     \end{frame}
 
     \begin{frame}
       \frametitle{A new objective}
-      Using TC as an objective, intuition
+      Using TC as an objective
+      Combination of different terms promoting different behavior
+      Explanation of the single terms, given an intuition
     \end{frame}
 
     \begin{frame}
       \frametitle{A convex lower bound}
-      Presenting the TC convex lower bound actually used
+      Presenting the TC convex lower bound actually used in optimization
     \end{frame}
 
 
   \section{Experiments and Results}
     \begin{frame}
       \frametitle{Experiment Design}
-      datasets, bsaeline models compared against, evaluation metrics/ scores
+      \begin{itemize}
+        \item datasets + image of data to illustrate
+        \item baseline models
+        \item evaluation methods (i.e. downstream scores, qualitative (visual))
+      \end{itemize}
     \end{frame}
 
     \begin{frame}
       \frametitle{Results}
+      \begin{itemize}
+        \item Qualitative: Traversals through latent space and discovery of 2 OOD generative factors (include picture)
+        \item Quantitative: on datasets using abovementionEd metrics.
+        \item Stress the performance on unbalanced datasets
+      \end{itemize}
     \end{frame}
 
   \section{Discussion and Conclusion}
