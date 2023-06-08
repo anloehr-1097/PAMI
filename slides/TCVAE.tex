@@ -66,14 +66,14 @@
 \DeclareMathOperator{\WS}{\mathbf{P}}
 \DeclareMathOperator{\Cov}{\mathbf{Cov}}
 \newcommand{\notimplies}{\;\not\!\!\!\implies}
-
 % Set up
 
-\mode<presentation>
+\mode<presentatio>
 {
   \usetheme{Warsaw}
   \setbeamercovered{transparent}
 }
+\setbeamersize{text margin right = 20mm, text margin right= 20mm}
 % Oder was auch immer. Zu beachten ist, das Font und Encoding passen
 % m�ssen. Falls T1 nicht funktioniert, kann man versuchen, die Zeile
 % mit fontenc zu l�schen.
@@ -92,6 +92,7 @@
 
 \let\definition\relax
 \let\theorem\relax
+%\let\footnoterule\relax
 % \let\theorem\relax
 \theoremstyle{definition}
 \newtheorem{definition}[section]{Definition}
@@ -130,16 +131,33 @@
     \begin{frame}
       \frametitle{The Problem statement}
       \begin{itemize}
+        \setlength{\itemindent}{-2em}
         \item Problem: Given data $X \in \mathbb{R}^{d}$ find a \textit{good} latent representation $Z \in \mathbb{R}^{m}$, $d, m \in \mathbb{N}$
-        \item Example: $X$ images of fruit, $Z$ latent representation representing shape, texture, color etc.
-        \end{itemize}
-      \end{frame}
+        \item Example: $X$ images of colored 3D objects, $Z$ latent representation representing shape, texture, color etc.
+      \end{itemize}
+     \end{frame}
+
+     \begin{frame}
+      \frametitle{Example: 3D shapes dataset}
+      \begin{figure}
+        \centering
+        \includegraphics[scale=0.15]{3d_shapes.png}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: https://github.com/deepmind/3d-shapes/tree/master}}
+      \end{figure}
+      %\vspace{-0.8 cm}
+      \begin{itemize}
+        \setlength{\itemindent}{-2em}
+        \item Generative Factors $=\{[floor, wall, object] color, scale, shape, orientation\}$
+      \end{itemize}
+     \end{frame}
 
       \begin{frame}
         \frametitle{Definitions and Notation}
         \begin{itemize}
-          \item \textbf{Data Generative Factors:} True underlying factors / attributes of the data
-          \item \textbf{Latent Variable:} 1 dimensional variable
+          \item \textbf{Data Generative Factors:} True underlying factors / attributes of the data or generation process
+          \item \textbf{OOD Data Generative Factors:} Generative Factors without variability in dataset
+          % explain: no variation of this factor in entire dataset, e.g. all objects are located in center of image for OOD factor camera perspective
           \item \textbf{Latent Representation:} The vector of latent variables
         \end{itemize}
       \end{frame}
@@ -247,9 +265,11 @@
 
     \begin{frame}
       \frametitle{A new objective}
-      Using TC as an objective
-      Combination of different terms promoting different behavior
-      Explanation of the single terms, given an intuition
+      \begin{itemize}
+        \item Using TC as an objective
+        \item Combination of different terms promoting different behavior (VIB, CEB, reconstruction error)
+        \item Explanation of the single terms, given an intuition
+      \end{itemize}
     \end{frame}
 
     \begin{frame}
@@ -269,10 +289,24 @@
     \end{frame}
 
     \begin{frame}
-      \frametitle{Results}
+      \frametitle{Results - Qualitative}
       \begin{itemize}
-        \item Qualitative: Traversals through latent space and discovery of 2 OOD generative factors (include picture)
-        \item Quantitative: on datasets using abovementionEd metrics.
+        \item Traversals through latent space show discovery of 2 OOD generative factors in 3D objects dataset
+      \end{itemize}
+      \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{latent_traversals_TC.png}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: original paper}}
+        % understand how this image is generated, how do traversals work?
+
+      \end{figure}
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{Results - Quantitative}
+      \begin{itemize}
+        \item On datasets using abovementionEd metrics.
         \item Stress the performance on unbalanced datasets
       \end{itemize}
     \end{frame}
@@ -289,4 +323,13 @@
         \item unbalanced generative factors in dataset $\implies$ disentanglement deteriorates.
       \end{itemize}
     \end{frame}
+
+
+    \begin{frame}
+      \frametitle{Criticism}
+      \begin{enumerate}
+              \item The concept of disentanglement is not clearly defined. Sometimes its equivalent to independence, sometimes not.
+      \end{enumerate}
+    \end{frame}
+
 \end{document}
