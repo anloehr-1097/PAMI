@@ -119,28 +119,19 @@
     \begin{titlepage}
     \end{titlepage}
   \end{frame}
-  \begin{frame}
-    \frametitle{Structure of the presentation (info sheet)}
-    \begin{itemize}
-      \item background/ preliminary work
-      \item approach
-      \item results
-      \item discussion and conclusion
-    \end{itemize}
-  \end{frame}
+
   %intro to generative modelling. The problem statement
   \section{Representation Learning and Generative Modeling}
     \begin{frame}
       \frametitle{The Problem statement}
       \begin{itemize}
-        \setlength{\itemindent}{-2em}
-        \item Problem: Given data $X \in \mathbb{R}^{d}$ find a \textit{good} latent representation $Z \in \mathbb{R}^{m}$, $d, m \in \mathbb{N}$
-        \item Example: $X$ images of colored 3D objects, $Z$ latent representation representing shape, texture, color etc.
+        \item \textbf{Problem}: Given data $X \in \mathbb{R}^{d}$ find a \textit{good} latent representation $Z \in \mathbb{R}^{m}$, $d, m \in \mathbb{N}$
+        \item \textbf{Example}: $X$ images of colored 3D objects, $Z$ latent representation representing shape, texture, color etc.
       \end{itemize}
      \end{frame}
 
      \begin{frame}
-      \frametitle{Example: 3D shapes dataset}
+      \frametitle{Example: 3D-shapes dataset}
       \begin{figure}
         \centering
         \includegraphics[scale=0.15]{3d_shapes.png}
@@ -149,7 +140,6 @@
       \end{figure}
       %\vspace{-0.8 cm}
       \begin{itemize}
-        \setlength{\itemindent}{-2em}
         \item Generative Factors $=\{[floor, wall, object] color, scale, shape, orientation\}$
       \end{itemize}
      \end{frame}
@@ -160,20 +150,20 @@
           \item \textbf{Data Generative Factors:} True underlying factors / attributes of the data or generation process
           \item \textbf{OOD Data Generative Factors:} Generative Factors without variability in dataset
           % explain: no variation of this factor in entire dataset, e.g. all objects are located in center of image for OOD factor camera perspective
-          \item \textbf{Latent Representation:} The vector of latent variables
+          \item \textbf{Latent Representation:} A vector of latent variables
+          \item \textbf{Disentanglement} TODO
         \end{itemize}
       \end{frame}
 
     \begin{frame}
-      \frametitle{What is a good learned latent representation?}
+      \frametitle{What makes a good latent representation?}
       \begin{itemize}
-        \item captures the true generative factors of the dataset
-        \item interpretable
-              $\rightarrow$ Optimally, single component of latent representation represents single generative factor
+        \item captures true generative factors of the dataset
+        \item interpretable $\rightarrow$ Optimally, \enquote{bijection} between data generative factors $\leftrightarrow$ latent representation
         \item sufficiently informative (captures majority of data generative factors)
         \item balanced
         \item Regularity
-        \item TODO: completeness definition
+        \item TODO: completeness definition, condense the above
         %, i.e. generative factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor
         % in the sense that even generative factors which are underrepresented in the dataset do have a correspoding latent factor
       \end{itemize}
@@ -183,7 +173,7 @@
         \frametitle{Why bother to learn good representations?}
         \begin{itemize}
           \item Facilitate downstream tasks like classification
-          \item Generative modeling: control generative factors explictly by tweaking the corresponding latent variables
+          \item Controllable Generative modeling: control generative factors explictly by tweaking the corresponding latent variables
           % TODO: add more reasons and illustrate
         \end{itemize}
       \end{frame}
@@ -196,9 +186,10 @@
         \item (Regular) Autoencoders? $\rightarrow$ Lack of regularity
         % explain regularity - refer to Medium article/ paper
         % https://towardsdatascience.com/understanding-variational-autoencoders-vaes-f70510919f73
-        \item Variational Autoencoders (VAE)?
+        \item Variational Autoencoders (VAE) $\rightarrow$ Lack of disentanglement
       \end{itemize}
     \end{frame}
+    % Note: Now work towards the principal contribution of the paper
 
     \begin{frame}
       \frametitle{Autoencoders}
@@ -229,17 +220,21 @@
     \end{frame}
     \begin{frame}
       \frametitle{Training Variational Autoencoders}
-      Inspecting Encoder and Decoder
-      The variational lower bound (ELBO) as on objective and lower bound to the likelihood of data
+      TODO
+     \begin{itemize}
+       \item Inspecting Encoder and Decoder
+          \item The variational lower bound (ELBO) as on objective and lower bound to the likelihood of data
+     \end{itemize}
     \end{frame}
 
     \begin{frame}
       \frametitle{Shortcomings}
+      TODO
     \end{frame}
 
     \begin{frame}
       \frametitle{Trying to Fix VAEs}
-      $\beta$-VAEs and alternatives
+      $\beta$-VAEs, Factor VAEs and alternatives. Explain the main ideas behind these. TODO
     \end{frame}
 
 
@@ -302,7 +297,7 @@
       \end{definition}
       \begin{intuition}
       \end{intuition}
-      TODO: Total correlation def and intuition
+      TODO: Total correlation def and intuition, properties
     \end{frame}
 
     \begin{frame}
@@ -322,7 +317,8 @@
       \begin{itemize}
         \item Using TC as an objective
         \item Combination of different terms promoting different behavior (VIB, CEB, reconstruction error)
-        \item Explanation of the single terms, given an intuition
+        \item Hyperparameter $\alpha$
+        \item Explanation of the single terms - give an intuition
       \end{itemize}
     \end{frame}
 
@@ -336,9 +332,14 @@
     \begin{frame}
       \frametitle{Experiment Design}
       \begin{itemize}
-        \item datasets + image of data to illustrate
-        \item baseline models
-        \item evaluation methods (i.e. downstream scores, qualitative (visual))
+        \item \textbf{Baseline Models}: $\beta$-VAE, Factor VAE
+        \item \textbf{Datasets}: 3D shapes dataset and unbalanced 3D shapes dataset, $\dots$
+        %% explain U3D shapes dataset
+        \item \textbf{Evaluation Methods}:
+          \begin{enumerate}
+            \item Qualitative: Latent space traversals
+            \item Quantitative: DCI, WSEPIN measuring Disentanglement, Completeness and Infromativeness
+          \end{enumerate}
       \end{itemize}
     \end{frame}
 
@@ -360,8 +361,9 @@
     \begin{frame}
       \frametitle{Results - Quantitative}
       \begin{itemize}
-        \item On datasets using abovementionEd metrics.
-        \item Stress the performance on unbalanced datasets
+        \item Outperforming baseline models on balanced dataset in terms of presented evaluation metrics
+
+        \item Performance on unbalanced datasets falls short of performance of baseline models
       \end{itemize}
     \end{frame}
 
