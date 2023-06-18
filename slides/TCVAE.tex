@@ -145,14 +145,23 @@
      \end{frame}
 
       \begin{frame}
-        \frametitle{Definitions and Notation}
+        \frametitle{Definitions and Notation (1)}
         \begin{itemize}
           \item \textbf{Data Generative Factors:} True underlying factors / attributes of the data or generation process
           \item \textbf{OOD Data Generative Factors:} Generative Factors without variability in dataset
           % explain: no variation of this factor in entire dataset, e.g. all objects are located in center of image for OOD factor camera perspective
           \item \textbf{Latent Representation:} A vector of latent variables
-          \item \textbf{Disentanglement} TODO
         \end{itemize}
+      \end{frame}
+
+      \begin{frame}
+        \frametitle{Distentanglement}
+        \begin{itemize}
+          \item no precise definition for disentanglement
+        \end{itemize}
+        \begin{definition}[Bengion et al 2013]
+          A latent respresentation is called \textit{disentangled} if for each latent variable, the change in 1 generative factor leads to a change in 1 latent variable.
+        \end{definition}
       \end{frame}
 
     \begin{frame}
@@ -161,8 +170,8 @@
         \item captures true generative factors of the dataset
         \item interpretable $\rightarrow$ Optimally, \enquote{bijection} between data generative factors $\leftrightarrow$ latent representation
         \item sufficiently informative (captures majority of data generative factors)
-        \item balanced
-        \item Regularity
+        \item balanced $\to$ no single factor outweighs other factor in terms of informativeness
+        \item Regularity TODO
         \item TODO: completeness definition, condense the above
         %, i.e. generative factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor
         % in the sense that even generative factors which are underrepresented in the dataset do have a correspoding latent factor
@@ -186,7 +195,7 @@
         \item (Regular) Autoencoders? $\rightarrow$ Lack of regularity
         % explain regularity - refer to Medium article/ paper
         % https://towardsdatascience.com/understanding-variational-autoencoders-vaes-f70510919f73
-        \item Variational Autoencoders (VAE) $\rightarrow$ Lack of disentanglement
+        \item Variational Autoencoders (VAE) $\rightarrow$ Lack of disentanglement and/ or regularity
       \end{itemize}
     \end{frame}
     % Note: Now work towards the principal contribution of the paper
@@ -224,17 +233,32 @@
      \begin{itemize}
        \item Inspecting Encoder and Decoder
           \item The variational lower bound (ELBO) as on objective and lower bound to the likelihood of data
+      % TODO: VAE objective insert and explain
      \end{itemize}
     \end{frame}
 
     \begin{frame}
       \frametitle{Shortcomings}
-      TODO
+      \begin{itemize}
+        \item \enquote{low dimensional} latent space $\to$ blurry reconstructions (lack of information in latents)
+        \item \enquote{high dimensional} latent space $\to$ low degree of distentanglement and no regularity
+        % TODO: Learned distribution in high dimensional space has disperded support -> no regularity
+      \end{itemize}
     \end{frame}
+
 
     \begin{frame}
       \frametitle{Trying to Fix VAEs}
-      $\beta$-VAEs, Factor VAEs and alternatives. Explain the main ideas behind these. TODO
+      \begin{itemize}
+        \item change of optimization objective to encourage desired behavior
+        \item All about trade-off between reconstruction and disentaglement
+        \item Important condition on new objectives: Lower bound to log likelihood of data
+        \begin{enumerate}
+          \item $\beta$-VAE ($\beta > $ 1): Poor reconstruction (information retained in latent rep. not sufficient)
+          \item Factor VAE:
+          \item ...
+        \end{enumerate}
+      \end{itemize}
     \end{frame}
 
 
@@ -293,37 +317,56 @@
     \begin{frame}
       \frametitle{Total Correlation}
       \begin{definition}[Total Correlation (TC)]
-        $TC(X) \coloneqq definition here$
+        $TC(X) \coloneqq D_{KL}\left[P^{X} \large  \Vert \prod_{i=1}^{d}P^{{X_{i}}}\right] $
       \end{definition}
       \begin{intuition}
+        TC measures the amount of information \textit{shared} among the random variables.
+        % point out why using the definition
       \end{intuition}
-      TODO: Total correlation def and intuition, properties
     \end{frame}
 
     \begin{frame}
-      \frametitle{Total Correlation as an objective}
-      TODO: Maximizing $TC(Z) - TC(Z \mid X)$. equivalence to minimizing the second term. Equivalence to $Z$ being independent conditioned on $X$.
+      \frametitle{Total Correlation as an objective (1)}
+      New objective given by
+      \begin{align*}
+        \underset{\theta}{\arg \max}TC_{\theta}(Z, X) \coloneqq TC_{\theta}(Z) - TC_{\theta}(Z \mid X).
+      \end{align*}
+      \begin{intuition}
+        Equivalent to minimizing 2nd term $\iff$ given $X$, information shared among components of $Z$ is reduced.
+        \newline
+        More intuition if viewd in information theoretic framework.
+      \end{intuition}
     \end{frame}
-
+    % Why this objective? More insight from information theoretic pov
 
     \begin{frame}
-      \frametitle{Information Bottleneck and Deep Variational IB}
-      TODO: Definition and Intuition
+      \frametitle{Total Correlation as an objective (2)}
+      Rewrite TC in terms of MI:
+      \begin{align*}
+        TC(Z, X) = \left(\sum_{k=1}^{m}I_{\theta}(Z_{k}, X)\right) - I_{\theta}(Z, X)
+      \end{align*}
+
+      \begin{intuition}
+        \begin{itemize}
+          \item Maximizing each terms $I(Z_{k}, X)$ $\to$ promotes single latent variable to \enquote{share} information with $X$
+          \item Minimizing $I(Z, X)$ promotes independence of $Z$ conditional on $X$
+          % see this by writing I(Z, X) = I(X) - I(X | Z) = I(Z) - I(Z | X) which is minimized if Z is independent condiitonal on X
+
+        \end{itemize}
+      \end{intuition}
     \end{frame}
 
-
     \begin{frame}
-      \frametitle{A new objective}
+      \frametitle{Total Correlation as an objective (3)}
       \begin{itemize}
-        \item Using TC as an objective
         \item Combination of different terms promoting different behavior (VIB, CEB, reconstruction error)
         \item Hyperparameter $\alpha$
         \item Explanation of the single terms - give an intuition
       \end{itemize}
     \end{frame}
-
     \begin{frame}
       \frametitle{A convex lower bound}
+      \textbf{Problem}: Intractable optimization problem. $\to$ need lower bound to maximize.
       Presenting the TC convex lower bound actually used in optimization
     \end{frame}
 
@@ -387,8 +430,25 @@
               \item The concept of disentanglement is not clearly defined. Sometimes its equivalent to independence, sometimes not.
       \end{enumerate}
     \end{frame}
+
+
+    \begin{frame}
+      \frametitle{Opinion}
+      \begin{itemize}
+        \item Lack of formalization of the concept of disentaglement
+        \item Not clear which definitions of TC they are using. Although they are citing the MVRL paper quite often, the deifnition of TC does not match
+
+
+
+      \end{itemize}
+
+    \end{frame}
+
+
     \begin{frame}
       \frametitle{Literature}
       Book Elements of information theory
     \end{frame}
+
+
    \end{document}
