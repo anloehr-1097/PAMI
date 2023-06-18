@@ -343,31 +343,43 @@
       \frametitle{Total Correlation as an objective (2)}
       Rewrite TC in terms of MI:
       \begin{align*}
-        TC(Z, X) = \left(\sum_{k=1}^{m}I_{\theta}(Z_{k}, X)\right) - I_{\theta}(Z, X)
+        TC_{\theta}(Z, X) = \left(\sum_{k=1}^{m}I_{\theta}(Z_{k}, X)\right) - I_{\theta}(Z, X)
       \end{align*}
-
       \begin{intuition}
         \begin{itemize}
           \item Maximizing each terms $I(Z_{k}, X)$ $\to$ promotes single latent variable to \enquote{share} information with $X$
-          \item Minimizing $I(Z, X)$ promotes independence of $Z$ conditional on $X$
+          \item Minimizing $I(Z, X)$ promotes independence of $Z$ conditional on $X$ (VIB term)
           % see this by writing I(Z, X) = I(X) - I(X | Z) = I(Z) - I(Z | X) which is minimized if Z is independent condiitonal on X
-
         \end{itemize}
       \end{intuition}
     \end{frame}
 
     \begin{frame}
       \frametitle{Total Correlation as an objective (3)}
+      TODO: Make sure CMI known, defined
+      Writing TC in terms of CMI:
+      \begin{align*}
+        TC_{\theta}(Z, X) = \frac{1}{m}\sum_{k = 1}^{m}\left[ (K-1) I_{\theta}(Z_{k}, X) - I_{\theta}(Z_{\neq k}, X \mid Z_{k})\right]
+      \end{align*}
+      \begin{intuition}
+       \begin{itemize}
+         \item Maximizing each terms $I(Z_{k}, X)$ $\to$ promotes single latent variable to \enquote{share} information with $X$
+         \item Minimizing $I_{\theta}(Z_{\neq k}, X \mid Z_{k})$ promotes balance of information related to each single latent variable (CEB term)
+       \end{itemize}
+      \end{intuition}
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{A convex lower bound of TC objective}
+      TODO
+      \textbf{Problem}: Intractable optimization problem. $\to$ need lower bound to maximize.
       \begin{itemize}
         \item Combination of different terms promoting different behavior (VIB, CEB, reconstruction error)
         \item Hyperparameter $\alpha$
-        \item Explanation of the single terms - give an intuition
       \end{itemize}
-    \end{frame}
-    \begin{frame}
-      \frametitle{A convex lower bound}
-      \textbf{Problem}: Intractable optimization problem. $\to$ need lower bound to maximize.
-      Presenting the TC convex lower bound actually used in optimization
+      \begin{align*}
+        TC(TODO)
+      \end{align*}
     \end{frame}
 
 
