@@ -1,0 +1,24 @@
+#+title: Ideas & TODOs
+
+* Ideas/ notable notions from other papers
+** Factor VAE paper
+- already stressed that an important downside of semi supervised representation learning is that humans in the loop might not be able to identify certain generative factors (i.e. OOD generative factors)
+- Low total correlation *NOT* equivalent to disentanglement (in the sense that disentanglement defined in this paper)
+
+
+
+** FactOR VAE and original paper
+- current metrics to measure disentanglement leveraged the availability of true geneerative factors on toy datasets
+- with OOD generative factors, this is not an appropriate way to do so
+
+** Original Paper
+- The key to understanding why maximization of TC(Z, X) makes sense lies in the presentation of the term in terms of Mutual Informatino as well as thet
+  representatoin of mutual informattion in terms of entropy. See slide and accompanying comment in latex
+
+
+* TODOS
+- Find Def of TC(X, Z) term. Is it defined as in the paper or is the equation in the paper just after manipulating the orig equatuion,
+- Modifications to Factor VAE and $\beta$ VAE
+- What are the meaning of the params phi and theta. Make this clear in standard VAE framework explanation
+- understand the metrics used in evaluation
+- Definition of informativeness is not clear yet
