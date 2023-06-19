@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\usetheme{Frankfurt}
+\usetheme{Warsaw}
 \usepackage[T1]{fontenc}
 \usepackage[right]{eurosym}
 \usepackage{latexsym}
@@ -77,7 +77,7 @@
   \usetheme{Frankfurt}
   \setbeamercovered{transparent}
 }
-\setbeamersize{text margin right = 20mm, text margin left= 20mm}
+\setbeamersize{text margin right = 15mm, text margin left= 15mm}
 % Oder was auch immer. Zu beachten ist, das Font und Encoding passen
 % m�ssen. Falls T1 nicht funktioniert, kann man versuchen, die Zeile
 % mit fontenc zu l�schen.
@@ -213,8 +213,9 @@
       %https://miro.medium.com/v2/resize:fit:4266/1*QEmCZtruuWwtEOUzew2D4A.png
       %\begin{center}
       \begin{figure}
-        \includegraphics[scale= 0.09]{Autoencoder_illustration.png}
-        \caption*{Source: https://medium.com/autoencoder-for-anomaly-detection/autoencoder-for-anomaly-detection-db6178ad07b2}
+        \includegraphics[scale= 0.1]{Autoencoder_illustration.png}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: https://medium.com/autoencoder-for-anomaly-detection/autoencoder-for-anomaly-detection-db6178ad07b2}}
         % explain graphics quickly
       \end{figure}
       % \end{center}
@@ -224,24 +225,35 @@
       \frametitle{Variational Autoencoders}
       \begin{figure}
         \includegraphics[scale=.125]{vae-diagram.jpg}
-        \caption{Source: TODO}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: https://learnopencv.com/variational-autoencoder-in-tensorflow}}
       \end{figure}
       \vspace{-5mm}
       \begin{itemize}
         \item Generative model consisting of probabilisitic encoder and decoder
-        \item Encoder \& decoder parametrize probability distributions over latent space and data respectively
+        \item (Neural Network) encoder \& decoder parametrize probability distributions over latent space and data respectively
       \end{itemize}
       % explain the graphics
 
     \end{frame}
     \begin{frame}
-      \frametitle{Training Variational Autoencoders}
-      TODO
-     \begin{itemize}
-       \item Inspecting Encoder and Decoder
-          \item The variational lower bound (ELBO) as on objective and lower bound to the likelihood of data
+      \frametitle{Training Variational Autoencoders (1)}
+
+      \begin{itemize}
+        \item (Original) objective consists of maximizing likelihood of data
+        \item Due to latent variables, the optimization is intractible $\rightarrow$ design of the VAE
+        \item yield distributions  $q_{\phi}(Z \mid X)$ and $p_{\theta}(X \mid Z)$
+        \item Actual objective: \textbf{Variational lower bound (ELBO)} $\rightarrow$ serves as lower bound to the likelihood of observed data
       % TODO: VAE objective insert and explain
      \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+      \frametitle{Training Variational Autoencoders (2)}
+      The Elbo is given as
+      \begin{align*}
+        \mathcal{L}
+      \end{align*}
     \end{frame}
 
     \begin{frame}

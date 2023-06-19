@@ -17,8 +17,9 @@
 
 
 * TODOS
-- Find Def of TC(X, Z) term. Is it defined as in the paper or is the equation in the paper just after manipulating the orig equatuion,
 - Modifications to Factor VAE and $\beta$ VAE
 - What are the meaning of the params phi and theta. Make this clear in standard VAE framework explanation
 - understand the metrics used in evaluation
 - Definition of informativeness is not clear yet
+- literature
+- ELBO
