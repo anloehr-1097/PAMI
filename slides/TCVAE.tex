@@ -1,4 +1,6 @@
 \documentclass{beamer}
+\usetheme{Frankfurt}
+\usepackage[T1]{fontenc}
 \usepackage[right]{eurosym}
 \usepackage{latexsym}
 \usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps}
@@ -32,8 +34,8 @@
 \usepackage{mathtools}
 \usepackage{hyperref}
 \usepackage{graphicx}
-\usepackage{times}
-\usepackage[T1]{fontenc}
+% \usepackage{times}
+\usepackage{mathptmx}
 
 
 \graphicspath{{./graphics/}}
@@ -58,6 +60,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
 \newcommand{\source}[1]{\caption*{Source: {#1}} }
 \captionsetup[figure]{font=footnotesize}
 \usepackage{commath}
@@ -71,10 +74,10 @@
 
 \mode<presentatio>
 {
-  \usetheme{Warsaw}
+  \usetheme{Frankfurt}
   \setbeamercovered{transparent}
 }
-\setbeamersize{text margin right = 20mm, text margin right= 20mm}
+\setbeamersize{text margin right = 20mm, text margin left= 20mm}
 % Oder was auch immer. Zu beachten ist, das Font und Encoding passen
 % m�ssen. Falls T1 nicht funktioniert, kann man versuchen, die Zeile
 % mit fontenc zu l�schen.
@@ -159,7 +162,7 @@
         \begin{itemize}
           \item no precise definition for disentanglement
         \end{itemize}
-        \begin{definition}[Bengion et al 2013]
+        \begin{definition}[Bengio et al 2013]
           A latent respresentation is called \textit{disentangled} if for each latent variable, the change in 1 generative factor leads to a change in 1 latent variable.
         \end{definition}
       \end{frame}
@@ -167,12 +170,16 @@
     \begin{frame}
       \frametitle{What makes a good latent representation?}
       \begin{itemize}
-        \item captures true generative factors of the dataset
-        \item interpretable $\rightarrow$ Optimally, \enquote{bijection} between data generative factors $\leftrightarrow$ latent representation
-        \item sufficiently informative (captures majority of data generative factors)
-        \item balanced $\to$ no single factor outweighs other factor in terms of informativeness
-        \item Regularity TODO
-        \item TODO: completeness definition, condense the above
+        %\item captures true generative factors of the dataset
+        %\item interpretable $\rightarrow$ Optimally, \enquote{bijection} between data generative factors $\leftrightarrow$ latent representation
+        % ----------------------------------------
+        % complete representations are interpretable and capture true generative factors by definition
+        % the lower the better
+        \item complete $\rightarrow$ low (Avg.) number of latent variables required to capture a single generative factor
+        % good informativeness implies balanced representation
+        \item informative $\rightarrow$ Each latent variable captures a single generative factor
+        %\item balanced $\to$ no single factor outweighs other factor in terms of informativeness
+        \item regular $\rightarrow$ learned distribution (density) is smooth, with support having few connected components
         %, i.e. generative factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor factors underrepresented in training data still have correspoding latent factor
         % in the sense that even generative factors which are underrepresented in the dataset do have a correspoding latent factor
       \end{itemize}
@@ -371,50 +378,97 @@
 
     \begin{frame}
       \frametitle{A convex lower bound of TC objective}
-      TODO
-      \textbf{Problem}: Intractable optimization problem. $\to$ need lower bound to maximize.
-      \begin{itemize}
-        \item Combination of different terms promoting different behavior (VIB, CEB, reconstruction error)
-        \item Hyperparameter $\alpha$
-      \end{itemize}
+      \textbf{Problem}: Intractable optimization problem.
+\newline
+      \vspace{.5 cm}
+      $\to$ need lower bound to maximize.
+      \newline
+      Convex Combination of different representation of TC
+      \begin{center}
+        $\underset{\text{derivation}}{\leadsto}$
+      \end{center}
       \begin{align*}
-        TC(TODO)
+        \begin{split}
+          &TC_{\theta}(Z, X) \geq \E_{q_{\theta}(Z \mid X)}[\log p_{\phi}(X \mid Z)]\\
+          &- \frac{\alpha}{M-\alpha} \sum_{k=1}^{m}D_{KL}(q_{\theta}(Z_{k} \mid X) \Vert r_{p}(Z_{p} \mid X))\\
+          &- \frac{1-\alpha}{1 - \frac{\alpha}{m}}D_{KL}(q_{\theta}(Z \mid X) \Vert r(Z)).
+        \end{split}
       \end{align*}
     \end{frame}
+    \begin{frame}
+      \frametitle{A convex lower bound of TC objective (details)}
+      \begin{itemize}
+              \item $\alpha$ Hyperparamter from convex combination balancing effects of VIB and CMI terms
+        \item $r(Z) = \mathcal{N}(0, \mathbf{I})$
+        \item $r_{p}(Z_{p} \mid X) = \mathcal{N}(\mu_{p}, \sigma_{p})$
+        \item $\mu_{p} \coloneqq \frac{\sum_{k=1}^{m}\frac{\mu_{k}}{\sigma_{k}^{2}}}{\sum_{k=1}^{m}\frac{1}{\sigma_{k}^{2}}}$
+        \item $\sigma_{p}^{2} \coloneqq \frac{1}{\sum_{k=1}^{m}\frac{1}{\sigma_{k}^{2}}}$
+              \item $\mu_{k}, \sigma_{k}$ are outputs from encoder network.
+      \end{itemize}
+    \end{frame}
+
 
 
   \section{Experiments and Results}
     \begin{frame}
       \frametitle{Experiment Design}
       \begin{itemize}
-        \item \textbf{Baseline Models}: $\beta$-VAE, Factor VAE
+        \item \textbf{Baseline Models}: $\beta$-VAE, Factor VAE with similar Encoder and Decoder Models
         \item \textbf{Datasets}: 3D shapes dataset and unbalanced 3D shapes dataset, $\dots$
-        %% explain U3D shapes dataset
+        %% explain U3D shapes dataset, stress that there are more datasets used in comparison than those listed
         \item \textbf{Evaluation Methods}:
           \begin{enumerate}
             \item Qualitative: Latent space traversals
-            \item Quantitative: DCI, WSEPIN measuring Disentanglement, Completeness and Infromativeness
+            % Explain latent space traversals
+            \item Quantitative: DCI, WSEPIN measuring Disentanglement, Completeness and Informativeness
+            % Explain DCI, WSPEIN and study those metrics to understand their meaning
           \end{enumerate}
+        \item Quantitaive Results report an average of 3 evaluations using different seeds
       \end{itemize}
     \end{frame}
 
     \begin{frame}
-      \frametitle{Results - Qualitative}
+      \frametitle{Results - Qualitative (1)}
       \begin{itemize}
         \item Traversals through latent space show discovery of 2 OOD generative factors in 3D objects dataset
       \end{itemize}
       \begin{figure}
         \centering
-        \includegraphics[scale=0.2]{latent_traversals_TC.png}
+        \includegraphics[scale=0.18]{latent_traversals_TC.png}
         \captionsetup{justification=centering}
         \caption*{\tiny{Source: original paper}}
-        % understand how this image is generated, how do traversals work?
+        % images generated by varying one latent variable at a timea
+      \end{figure}
+      \begin{itemize}
+        \item Object dim and object color are not fully disentangled
+      \end{itemize}
+    \end{frame}
 
+    \begin{frame}
+      \frametitle{Results - Qualitative (2)}
+      \begin{itemize}
+        \item OOD samples generated by TC-VAE and baseline models
+      \end{itemize}
+      \begin{figure}
+        \centering
+        \includegraphics[scale=0.13]{comp_OOD_samples.png}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: original paper}}
+        % comment these findings
+        % one can see that
       \end{figure}
     \end{frame}
 
     \begin{frame}
-      \frametitle{Results - Quantitative}
+      \frametitle{Results - Quantitative (1)}
+      Results on \textbf{balanced} datasets:
+      \begin{figure}
+        \centering
+        \includegraphics[scale=0.18]{quantitative_balanced.png}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: original paper}}
+        % images generated by varying one latent variable at a timea
+      \end{figure}
       \begin{itemize}
         \item Outperforming baseline models on balanced dataset in terms of presented evaluation metrics
 
@@ -422,44 +476,57 @@
       \end{itemize}
     \end{frame}
 
-  \section{Discussion and Conclusion}
     \begin{frame}
-      \frametitle{Discussion and Conclusion}
+      \frametitle{Results - Quantitative (2)}
+      Results on \textbf{unbalanced} datasets:
+      \begin{figure}
+        \centering
+        \includegraphics[scale=0.18]{quantitative_unbalanced.png}
+        \captionsetup{justification=centering}
+        \caption*{\tiny{Source: original paper}}
+        % images generated by varying one latent variable at a timea
+      \end{figure}
       \begin{itemize}
-        \item Inspiration from Multiview representation learning (OOD generative factors correspond to missing views)
+        \item Outperformance in terms of informativenes
+        \item Stronger imbalance lead to better performance of Factor VAE
+      \end{itemize}
+    \textbf{BUT:} Quantiative and qualitative results do not converge $\rightarrow$ questionable results
+    \end{frame}
+    \section{Discussion and Conclusion}
+
+    \begin{frame}
+      \frametitle{Discussion}
+      \begin{itemize}
+        \item Inspiration from Multiview representation learning
         \item Uncovering OOD generative factors $\equiv$ inferring missing views
-        \item Experimental validation that TC-VAE is capable of uncovering OOD generative factors
-        \item missing view also problematic for downstream tasks. underrepresented views may be seen as outliers
-        \item main shortcoming: Terms appearing as part of the bound do promote conflicting behavior during minization
+        \item Experimental validation that TC-VAE is capable of uncovering OOD generative factors (really recognizing them as generative factors instead of treating them as side effects)
         \item unbalanced generative factors in dataset $\implies$ disentanglement deteriorates.
+        \item Consistent outperfomance in terms of informativeness
       \end{itemize}
     \end{frame}
 
+    \begin{frame}
+      \frametitle{Conclusion}
+      \begin{itemize}
+        % Main shortcoming
+        \item Design of the lower bound leads to balanced representations at cost of minor shortcomings in disentanglement (probably result of trade-off induced by the different terms in lower bound)
+        \item Weak performance on unbalanced datasets in terms of disentanglement
+      \end{itemize}
+    \end{frame}
 
     \begin{frame}
-      \frametitle{Criticism}
+      \frametitle{Criticism and Comments}
       \begin{enumerate}
-              \item The concept of disentanglement is not clearly defined. Sometimes its equivalent to independence, sometimes not.
+        \item The concept of disentanglement is not clearly defined. Sometimes its equivalent to independence, sometimes not.
+        \item Datasets used are toy datasets. Effectiveness remains to be shown on real datasets
+        \item Not clear which definitions of TC they are using. Although they are citing the MVRL paper quite often, the deifnition of TC does not match
       \end{enumerate}
     \end{frame}
-
-
-    \begin{frame}
-      \frametitle{Opinion}
-      \begin{itemize}
-        \item Lack of formalization of the concept of disentaglement
-        \item Not clear which definitions of TC they are using. Although they are citing the MVRL paper quite often, the deifnition of TC does not match
-
-
-
-      \end{itemize}
-
-    \end{frame}
-
 
     \begin{frame}
       \frametitle{Literature}
       Book Elements of information theory
+      TODO
     \end{frame}
 
 
