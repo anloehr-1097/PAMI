@@ -36,8 +36,11 @@
 \usepackage{graphicx}
 % \usepackage{times}
 \usepackage{mathptmx}
+\usepackage{calrsfs}
 
-
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\La}{\mathcal{L}}
+\newcommand{\Lb}{\pazocal{L}}
 \graphicspath{{./graphics/}}
 
 \usepackage[
@@ -231,7 +234,7 @@
       \vspace{-5mm}
       \begin{itemize}
         \item Generative model consisting of probabilisitic encoder and decoder
-        \item (Neural Network) encoder \& decoder parametrize probability distributions over latent space and data respectively
+        \item (Neural Network) encoder \& decoder parametrize conditional probability distributions over latent space and data respectively
       \end{itemize}
       % explain the graphics
 
@@ -240,20 +243,37 @@
       \frametitle{Training Variational Autoencoders (1)}
 
       \begin{itemize}
-        \item (Original) objective consists of maximizing likelihood of data
-        \item Due to latent variables, the optimization is intractible $\rightarrow$ design of the VAE
-        \item yield distributions  $q_{\phi}(Z \mid X)$ and $p_{\theta}(X \mid Z)$
+        \item (Original) objective: maximizing likelihood of data, i.e. find $\theta$ s.t. $p_{\theta}(X) \approx p(X)$
+        % introduce latent variables since latent variable models are powerful in that they are capable of learning really complex probabililty distributions
+        \item Due to latent variables, optimization is intractible $\rightarrow$ approximate $p_{\theta}(Z \mid X)$ and make tractable
+        \item Approximate inference using parametrized model $q_{\phi}(Z \mid X)$ % to approximate $p_{\theta}(Z \mid X)$
         \item Actual objective: \textbf{Variational lower bound (ELBO)} $\rightarrow$ serves as lower bound to the likelihood of observed data
       % TODO: VAE objective insert and explain
      \end{itemize}
     \end{frame}
 
     \begin{frame}
+      \frametitle{Kullback-Leibler Divergence}
+      Let $p(x), q(x)$ be 2 (univariate) probability densities.
+      \begin{definition}[Kullback-Leibler Divergence ($D_{KL}$)]
+       $D_{KL}(p \Vert q = \int p(x) \log \frac{p(x)}{q(x)} dx$
+      \end{definition}
+      \begin{intuition}
+        Measures the similarity betweeen 2 probability distributions.
+      \end{intuition}
+
+    \end{frame}
+    \begin{frame}
       \frametitle{Training Variational Autoencoders (2)}
-      The Elbo is given as
+      The ELBO is given as
       \begin{align*}
-        \mathcal{L}
+        \Lb_{\phi, \theta}(X) = \E_{q_{\phi}(Z \mid X)}[\log p_{\theta}(X, Z) - \log q_{\phi}(Z \mid X)].
       \end{align*}
+      Maximiziation of the ELBO results in
+      \begin{itemize}
+        \item minimization of $D_{KL}(q_{\phi}(Z \mid X) \Vert p_{\theta}(Z \mid X))$
+             \item maximation of $\log p_{\theta}(X)$
+      \end{itemize}
     \end{frame}
 
     \begin{frame}
@@ -264,7 +284,6 @@
         % TODO: Learned distribution in high dimensional space has disperded support -> no regularity
       \end{itemize}
     \end{frame}
-
 
     \begin{frame}
       \frametitle{Trying to Fix VAEs}
@@ -285,8 +304,10 @@
     \begin{frame}
       \frametitle{Prerequisites}
       \begin{itemize}
-        \item $X = (X_{1}, \dots, X_{d})$ random variable (rv) w/ density $p(x)$ and distribution $P^{X}$
-        \item $Z = (Z_{1}, \dots, Z_{m})$ rv w/ density $p(z)$ and distribution $P^{Z}$
+        \item $X = (X_{1}, \dots, X_{d})$ random variable (rv) w/ density $p(x)$ and distribution $P^{X}$.
+        \item $Z = (Z_{1}, \dots, Z_{m})$ rv w/ density $p(z)$ and distribution $P^{Z}$.
+        \item In the following we use $p(x)$ and $P^{X}$  interchangeably.
+              \item Following definitions have conditional counterparts
       \end{itemize}
     \end{frame}
 
@@ -308,23 +329,10 @@
      \end{example}
     \end{frame}
 
-
     \begin{frame}
       \frametitle{Mutual Information}
       \begin{definition}[Mutual Information]
-        $I(X, Z) \coloneqq H(X) + H(Z) - H(X, Z) = H(X) - H(X \mid Z)$
-      \end{definition}
-      % Note: def for rv continous, in discrete case, replace Rd by N and dx by counting measure
-      \begin{intuition}
-        Reduction in uncertainty of one rv given another rv.
-        % Or what is left actually. Understand this
-      \end{intuition}
-    \end{frame}
-
-    \begin{frame}
-      \frametitle{Kullback-Leibler Divergence}
-      \begin{definition}[Kullback-Leibler Divergence ($D_{KL}$)]
-        $I(X, Z) \coloneqq H(X) + H(Z) - H(X, Z) = H(X) - H(X \mid Z)$
+        $I(X, Z) \coloneqq H(X) + H(Z) - H(X, Z) = H(Z) - H(Z \mid X)$
       \end{definition}
       % Note: def for rv continous, in discrete case, replace Rd by N and dx by counting measure
       \begin{intuition}
@@ -353,7 +361,7 @@
       \begin{intuition}
         Equivalent to minimizing 2nd term $\iff$ given $X$, information shared among components of $Z$ is reduced.
         \newline
-        More intuition if viewd in information theoretic framework.
+        More intuition if viewed in information theoretic framework.
       \end{intuition}
     \end{frame}
     % Why this objective? More insight from information theoretic pov
