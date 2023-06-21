@@ -89,7 +89,7 @@
 % m�ssen. Falls T1 nicht funktioniert, kann man versuchen, die Zeile
 % mit fontenc zu l�schen.
 
-\title[]{TC-VAE: Uncovering Out of distribution generative factors}
+\title[]{TC-VAE: Uncovering Out-of-Distribution Generative Factors}
 \author{Andreas Loehr}
 \institute{Goethe Universität Frankfurt a.M.}
 \date{
@@ -196,7 +196,7 @@
         \frametitle{Why bother to learn good representations?}
         \begin{itemize}
           \item Facilitate downstream tasks like classification
-          \item Controllable Generative modeling: control generative factors explictly by tweaking the corresponding latent variables
+          \item Controllable Generative Modeling: control generative factors explictly by tweaking the corresponding latent variables
           % TODO: add more reasons and illustrate
         \end{itemize}
       \end{frame}
@@ -312,7 +312,8 @@
         \item $Z = (Z_{1}, \dots, Z_{m})$ rv w/ density $p(z)$ and distribution $P^{Z}$.
               \item Marginal densities denoted as $p(x_{i}), i \in \{1, \dots d\}$ (similar for $z$)
         \item In the following we use $p(x)$ and $P^{X}$  interchangeably.
-              \item Following definitions have conditional counterparts
+        \item Following definitions have conditional counterparts
+        \item Change the roles of $\theta$ and $\phi$
       \end{itemize}
     \end{frame}
 
@@ -366,9 +367,8 @@
       \end{align*}
       \begin{intuition}
         Equivalent to minimizing 2nd term $\iff$ given $X$, information shared among components of $Z$ is reduced.
-        \newline
-        More intuition if viewed in information theoretic framework.
       \end{intuition}
+      Better  intuition if viewed in information theoretic framework.
     \end{frame}
     % Why this objective? More insight from information theoretic pov
 
@@ -417,7 +417,7 @@
       \end{center}
       \begin{align*}
         \begin{split}
-          &TC_{\theta}(Z, X) \geq \E_{q_{\theta}(Z \mid X)}[\log p_{\phi}(X \mid Z)]\\
+          TC_{\theta}(Z, X) &\geq \E_{q_{\theta}(Z \mid X)}[\log p_{\phi}(X \mid Z)]\\
           &- \frac{\alpha}{M-\alpha} \sum_{k=1}^{m}D_{KL}(q_{\theta}(Z_{k} \mid X) \Vert r_{p}(Z_{p} \mid X))\\
           &- \frac{1-\alpha}{1 - \frac{\alpha}{m}}D_{KL}(q_{\theta}(Z \mid X) \Vert r(Z)).
         \end{split}
@@ -537,7 +537,7 @@
       \frametitle{Conclusion (2)}
       \begin{itemize}
         % Main shortcoming
-        \item Design of the lower bound leads to balanced representations at cost of minor shortcomings in disentanglement (probably result of trade-off induced by the different terms in lower bound)
+        \item Design of lower bound $\to$ trade-off between balanced representations \& disentanglement
         \item Weak performance on unbalanced datasets in terms of disentanglement
       \end{itemize}
     \end{frame}
@@ -545,9 +545,9 @@
     \begin{frame}
       \frametitle{Criticism and Comments}
       \begin{enumerate}
-        \item The concept of disentanglement is not clearly defined
-        \item Datasets used are toy datasets. Effectiveness remains to be shown on real datasets
-        \item Not clear which definitions of TC they are using. Although they are citing the MVRL paper quite often, the deifnition of TC does not match
+        \item Concept of disentanglement not clearly defined
+        \item Datasets used are toy datasets. Effectiveness on real datasets?
+        %\item Not clear which definitions of TC they are using. Although they are citing the MVRL paper quite often, the deifnition of TC does not match
         \item Paper lacks mathematical rigor, at some places being plain wrong
         % example: Definition of $TC_{\theta}(Z \mid X)$ is wrong in their paper
         \item hypothesis: Learning OOD data generative factors requires to pick adequate dimension for latent space
