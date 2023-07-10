@@ -100,7 +100,7 @@
 
 % Short headings should be running head and authors last names
 
-\ShortHeadings{Sample JMLR Paper} {One and Two}
+\ShortHeadings{TC-Vae: Uncovering Out-of-Distribution Data Generative Factors} {A brief summary}
 \firstpageno{1}
 
 \begin{document}
@@ -108,8 +108,9 @@
 \title{TC-VAE: Uncovering Out-of-Distribution Data Generative Factors - A summary}
 
 \author{Authors of the original paper: Christian Meo, Anirudh Goyal, Justin Dauwels}
-\editor{Andreas Loehr}
+\editor{Andreas Loehr}[asdfsaf]
 \maketitle
+
 
 \begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
   Learning disentangled representations of a given data distribution represents an integral part of unsupervised learning.
@@ -128,7 +129,7 @@ Various attempts have been made to generate disentagled representations. The mod
 Quantification of the learned latent representation (distribution) is usually done on toy datasets with a small amount of known generative factors. The evaluation is done qualitatively inspecting the latent space traversals obtained from manipulating single latent variables of a representation and quantitatively leveraging a set of metrics which are designed to capture the degree of disentangled of a representation.
 
 \subsection{Contributions}
-The contributions of the authors of the paper are threefold. On the one hand, they propose a new objective function to minimize during the training of a VAE. Their derived objective is a convex combination of 2 existing objectives which do have their roots in information theory.
+The contributions of the authors of the paper are threefold. On the one hand, they propose a new objective function to minimize during the training of a VAE. Their derived objective is a convex combination of 2 existing objectives which do have their roots in information theory and in theory promote learning disentagled representations.
 They demonstrate that, using their new objective in VAE training, their model is capable of uncovering generative factors which are not captured in the dataset - so called \enquote{Out of Distribution} (OOD) generative factors.
 On the other hand, they design a new dataset used for the evaluation of models learning data representations. Their dataset is only a slight modification of an existing dataset. More explicitly, they create an unbalanced version of the dataset, one generative factor being not uniformly distributed over the dataset as is common in the existing datasets.
 Moreover, they evaluate existing models on their newly designed dataset, examining the effects of the disbalance on the representations learned.
@@ -140,10 +141,52 @@ For the remainder of the paper we use the following notation.
   \item We call $X$ the data and $Z$ the latent representation. Usually, $m << d$. Latent representations are of much smaller dimension than the data.
   \item Conditional distributions are denoted as $P^{Z \mid X}$ or $p(z \mid x)$.
 \end{itemize}
+A major difficulty is to find a precise definition of disentanglement. Due to the lack of one such definition, a commonly used one is as follows.
+
+\begin{definition}[Disentanglement \cite{Bengio_2013}]
+  A latent representation is called \textit{disentagled} if there is a one-to-one correspondence between latent variables and generative factors, i.e. a change in 1 latent variable correponds to a change in 1 latent variable and vice versa.
+\end{definition}
+We may break down the concept of disentaglement in terms of
+\begin{itemize}
+  \item \textit{completeness}: A low average number of latent variables is required to captue a single generative factor.
+  \item \textit{informativeness}: Each latent variable does capture an entire generative factor.
+\end{itemize}
+
+One key concept used throughout the paper to push models towards learning disentagled representations is that of \textit{Total Correlation} of a random vector.
+
+\begin{definition}[Total Correlation]
+  For $Z \in \R^{m}, m \in \N$ we call
+  \begin{align*}
+    TC(z) \coloneqq D_{KL}(p(z) \mid \prod_{i=1}^{m}p(z_{i}))
+  \end{align*}
+  the \textit{Total Correlation} of $Z$. Moreover, we define
+  \begin{align*}
+    TC(z \mid x) \coloneqq D_{KL}(p(z \mid x) \mid \prod_{i=1}^{m}p(z_{i} \mid x))
+  \end{align*}
+  as the \textit{Conditional Total Correlation} of $Z$ given $X$.
+\end{definition}
+Intuitively, total correlation of a random vector captures the amount of information shared among the single components of the vector. Some authors use the concept of total correlation to define disentanglement. Others make clear, that just relying on this concept for the definition of disentanglement does not suffice. (TODO: add sources or explain)
+
+$TC$ is however used as part of the objective function (\cite{FactorVAE}) or as in the paper at hand, as a foundation to derive a more suitable lower bound to optimize in order to learn disentagled representations.
+
+
 
 
 
 \section{Approach}
+The starting point for the derivation of the objective is the joint correlation of the data and the learned representation and a convex lower bound thereof.
+\begin{definition}[Joint Total Correlation]
+  We define the joint total correlation as
+  \begin{align*}
+    TC(z, x) \coloneqq TC(Z) - TC(z \mid x)
+  \end{align*}
+\end{definition}
+By breaking down $TC(z, x)$ using concepts from information theory, we may gain introspection into the usefulness of this as an objective to learn disentangled representations.
+
+
+
+
+
 
 \section{Results}
 

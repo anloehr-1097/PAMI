@@ -15,11 +15,3 @@
 - The key to understanding why maximization of TC(Z, X) makes sense lies in the presentation of the term in terms of Mutual Informatino as well as thet
   representatoin of mutual informattion in terms of entropy. See slide and accompanying comment in latex
 
-
-* TODOS
-- Modifications to Factor VAE and $\beta$ VAE
-- What are the meaning of the params phi and theta. Make this clear in standard VAE framework explanation
-- understand the metrics used in evaluation
-- Definition of informativeness is not clear yet
-- literature
-- ELBO
