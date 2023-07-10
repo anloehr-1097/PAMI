@@ -1,0 +1,216 @@
+\documentclass[twoside,11pt]{article}
+
+\usepackage{blindtext}
+
+% Any additional packages needed should be included after jmlr2e.
+% Note that jmlr2e.sty includes epsfig, amssymb, natbib and graphicx,
+% and defines many common macros, such as 'proof' and 'example'.
+%
+% It also sets the bibliographystyle to plainnat; for more information on
+% natbib citation styles, see the natbib documentation, a copy of which
+% is archived at http://www.jmlr.org/format/natbib.pdf
+
+% Available options for package jmlr2e are:
+%
+%   - abbrvbib : use abbrvnat for the bibliography style
+%   - nohyperref : do not load the hyperref package
+%   - preprint : remove JMLR specific information from the template,
+%         useful for example for posting to preprint servers.
+%
+% Example of using the package with custom options:
+%
+% \usepackage[abbrvbib, preprint]{jmlr2e}
+
+\usepackage{jmlr2e}
+% Definitions of handy macros can go here
+
+\usepackage[T1]{fontenc}
+\usepackage[right]{eurosym}
+\usepackage{latexsym}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps}
+\usepackage{color}
+\usepackage{bbm}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+% \usepackage[vmargin=25mm, top=20mm, bottom=25mm, left=28mm, right=28mm, includehead]{geometry}
+% \usepackage{parskip}
+\usepackage{csquotes}
+\usepackage{german}
+\usepackage{ngerman}
+\usepackage{microtype}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{extarrows}
+\usepackage{amsthm}
+\usepackage{bookmark}
+\usepackage{mathrsfs}
+\usepackage{scrextend}
+\usepackage{tikz}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mathtools}
+\usepackage{wrapfig}
+\usepackage[singlelinecheck=false,justification=justified]{caption}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{graphicx}
+% \usepackage{times}
+\usepackage{mathptmx}
+\usepackage{calrsfs}
+
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\La}{\mathcal{L}}
+\newcommand{\Lb}{\pazocal{L}}
+\graphicspath{{./graphics/}}
+
+\usepackage[
+    left = \flqq{},%
+    right = \frqq{},%
+    leftsub = \flq{},%
+    rightsub = \frq{} %
+]{dirtytalk}
+
+\usepackage[backend=biber, style=apa]{biblatex}
+\addbibresource{"lit_PAMI.bib"}
+\setbeamertemplate{bibliography item}{\insertbiblabel}
+% \bibliographystyle{acm}
+%\bibliography{lit_PAMI.bib}
+
+\newcommand{\uz}{\wegde}
+\newcommand{\oz}{\vee}
+\newcommand*\xor{\mathbin{\oplus}}
+\everymath{\displaystyle}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\source}[1]{\caption*{Source: {#1}} }
+\captionsetup[figure]{font=footnotesize}
+\usepackage{commath}
+\usepackage{esdiff}
+\DeclareMathOperator{\Var}{\mathbf{Var}}
+\DeclareMathOperator{\EW}{\mathbf{E}}
+\DeclareMathOperator{\WS}{\mathbf{P}}
+\DeclareMathOperator{\Cov}{\mathbf{Cov}}
+\newcommand{\notimplies}{\;\not\!\!\!\implies}
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+
+% Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
+
+\usepackage{lastpage}
+\jmlrheading{23}{2022}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Author One and Author Two}
+
+% Short headings should be running head and authors last names
+
+\ShortHeadings{Sample JMLR Paper} {One and Two}
+\firstpageno{1}
+
+\begin{document}
+
+\title{TC-VAE: Uncovering Out-of-Distribution Data Generative Factors - A summary}
+
+\author{Authors of the original paper: Christian Meo, Anirudh Goyal, Justin Dauwels}
+\editor{Andreas Loehr}
+\maketitle
+
+\begin{abstract}%   <- trailing '%' for backward compatibility of .sty file
+  Learning disentangled representations of a given data distribution represents an integral part of unsupervised learning.
+  One goal is to uncover the true generative factors of the data distribution.
+  To this day, noone was able to uncover data generative factors with little to no variablity (OOD generative factors) in the dataset presented.
+  Moreover, the evaluation of the models learning such representations has been carried out on datasets with perfectly balanced generative factors.
+  The paper's contribution to the current body of research is threefold. The authors respond to the abovementioned shortcomings by introducing a new generative model named TC-VAE which is optimized on a convex lower bound of the total correlation between the learned representation and the data and by comparing the performance of this model with common baseline models on standard datasets used for the task, as well as a custom designed dataset with unbalanced data generative factors. They illustrate their proposed model's capability to uncover OOD generative factors. To improve the qualitative evaulation of the perfomance, they propose a new method used to visualize latent space traversals.
+\end{abstract}
+
+\section{Introduction}
+\subsection{Motivation and background}
+A \textit{good} latent representation of a given data distribution oftentimes yields a solid foundation for generative tasks as well as downstream tasks in supervised learning. It is widely accepted that learning such representations in an unsupervised fashion benefits a variety of subfields of machine learning [TODO BETTER INTRO HERE].
+The goodness of a representation is characterized in terms of its degree of disentanglement. A representation is said to be disentangled if each component in the learned latent vector corresponds to a single generative factor of the data. Even though a unified formal / mathematical definition of disentanglement is nowhere to be found, different definitions of disentaglment of various authors do converge and seem to capture the same concept.
+
+Various attempts have been made to generate disentagled representations. The model architectures predominantly being inspired by that of a Variational Auto Encoder (VAE), the idea in most approaches is to modify the optimization objective such that the distribution of the latent vector conditioned on the data factorizes.
+Quantification of the learned latent representation (distribution) is usually done on toy datasets with a small amount of known generative factors. The evaluation is done qualitatively inspecting the latent space traversals obtained from manipulating single latent variables of a representation and quantitatively leveraging a set of metrics which are designed to capture the degree of disentangled of a representation.
+
+\subsection{Contributions}
+The contributions of the authors of the paper are threefold. On the one hand, they propose a new objective function to minimize during the training of a VAE. Their derived objective is a convex combination of 2 existing objectives which do have their roots in information theory.
+They demonstrate that, using their new objective in VAE training, their model is capable of uncovering generative factors which are not captured in the dataset - so called \enquote{Out of Distribution} (OOD) generative factors.
+On the other hand, they design a new dataset used for the evaluation of models learning data representations. Their dataset is only a slight modification of an existing dataset. More explicitly, they create an unbalanced version of the dataset, one generative factor being not uniformly distributed over the dataset as is common in the existing datasets.
+Moreover, they evaluate existing models on their newly designed dataset, examining the effects of the disbalance on the representations learned.
+
+\section{Background and Preliminary Work}
+For the remainder of the paper we use the following notation.
+\begin{itemize}
+    \item Let $X \in $
+\end{itemize}
+
+
+\section{Approach}
+
+\section{Results}
+
+\section{Discussion and Conclusion}
+
+
+
+% Acknowledgements and Disclosure of Funding should go at the end, before appendices and references
+
+\acks{All acknowledgements go at the end of the paper before appendices and references.
+Moreover, you are required to declare funding (financial activities supporting the
+submitted work) and competing interests (related financial activities outside the submitted work).
+More information about this disclosure can be found on the JMLR website.}
+
+% Manual newpage inserted to improve layout of sample file - not
+% needed in general before appendices/bibliography.
+
+\newpage
+
+\appendix
+\section{}
+\label{app:theorem}
+
+% Note: in this sample, the section number is hard-coded in. Following
+% proper LaTeX conventions, it should properly be coded as a reference:
+
+%In this appendix we prove the following theorem from
+%Section~\ref{sec:textree-generalization}:
+
+In this appendix we prove the following theorem from
+Section~6.2:
+
+\noindent
+{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
+not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
+dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
+which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
+respective empirical mutual information values based on the sample
+$\dataset$. Then
+\[
+	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
+\]
+with equality only if $u$ is identically 0.} \hfill\BlackBox
+
+\section{}
+
+\noindent
+{\bf Proof}. We use the notation:
+\[
+P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
+P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
+\]
+These values represent the (empirical) probabilities of $v$
+taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
+by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
+
+{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
+
+
+\vskip 0.2in
+\bibliography{sample}
+
+\end{document}
