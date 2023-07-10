@@ -108,7 +108,7 @@
 \title{TC-VAE: Uncovering Out-of-Distribution Data Generative Factors - A summary}
 
 \author{Authors of the original paper: Christian Meo, Anirudh Goyal, Justin Dauwels}
-\editor{Andreas Loehr}[asdfsaf]
+\editor{Andreas Loehr}
 \maketitle
 
 
@@ -154,6 +154,10 @@ We may break down the concept of disentaglement in terms of
 
 One key concept used throughout the paper to push models towards learning disentagled representations is that of \textit{Total Correlation} of a random vector.
 
+\begin{definition}[Mutual Information]
+  TODO
+\end{definition}
+
 \begin{definition}[Total Correlation]
   For $Z \in \R^{m}, m \in \N$ we call
   \begin{align*}
@@ -183,6 +187,15 @@ The starting point for the derivation of the objective is the joint correlation 
 \end{definition}
 By breaking down $TC(z, x)$ using concepts from information theory, we may gain introspection into the usefulness of this as an objective to learn disentangled representations.
 
+
+\begin{proposition}[TC in terms of Mutual Information]
+  Here.
+\end{proposition}
+
+
+\begin{proposition}[TC in terms of Conditional Mutual Information]
+  Here.
+\end{proposition}
 
 
 
