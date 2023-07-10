@@ -136,8 +136,11 @@ Moreover, they evaluate existing models on their newly designed dataset, examini
 \section{Background and Preliminary Work}
 For the remainder of the paper we use the following notation.
 \begin{itemize}
-    \item Let $X \in $
+  \item Let $X \in \R^{d}, Z \in \R^{m}, \hspace{0.1 cm} d,m \in \N$. Let $P^{X}, P^{Z}$ or $p(x), p(z)$ the distributions of $X$ respectively $Z$. As long as it is clear for the context, we might use $p(z)$ for the distribution as well as the density.
+  \item We call $X$ the data and $Z$ the latent representation. Usually, $m << d$. Latent representations are of much smaller dimension than the data.
+  \item Conditional distributions are denoted as $P^{Z \mid X}$ or $p(z \mid x)$.
 \end{itemize}
+
 
 
 \section{Approach}
