@@ -117,7 +117,11 @@
   One goal is to uncover the true generative factors of the data distribution.
   To this day, noone was able to uncover data generative factors with little to no variablity (OOD generative factors) in the dataset presented.
   Moreover, the evaluation of the models learning such representations has been carried out on datasets with perfectly balanced generative factors.
-  The paper's contribution to the current body of research is threefold. The authors respond to the abovementioned shortcomings by introducing a new generative model named TC-VAE which is optimized on a convex lower bound of the total correlation between the learned representation and the data and by comparing the performance of this model with common baseline models on standard datasets used for the task, as well as a custom designed dataset with unbalanced data generative factors. They illustrate their proposed model's capability to uncover OOD generative factors. To improve the qualitative evaulation of the perfomance, they propose a new method used to visualize latent space traversals.
+  The authors present a new model called the TC-VAE able to learn uncover such OOD generative factors and compare its performance to baseline models on unbalanced datasets.
+
+
+
+  % $The paper's contribution to the current body of research is threefold. The authors respond to the abovementioned shortcomings by introducing a new generative model named TC-VAE which is optimized on a convex lower bound of the total correlation between the learned representation and the data and by comparing the performance of this model with common baseline models on standard datasets used for the task, as well as a custom designed dataset with unbalanced data generative factors. They illustrate their proposed model's capability to uncover OOD generative factors. To improve the qualitative evaulation of the perfomance, they propose a new method used to visualize latent space traversals.
 \end{abstract}
 
 \section{Introduction}
@@ -151,59 +155,94 @@ We may break down the concept of disentaglement in terms of
   \item \textit{completeness}: A low average number of latent variables is required to captue a single generative factor.
   \item \textit{informativeness}: Each latent variable does capture an entire generative factor.
 \end{itemize}
+The authors take an information-theoretic approach to the derivation of their lower bound of the likelihood of the data. We thus introduce a range of concepts essential to the understanding of the results of the paper. Note that for all of the following definitions, an analogous definition can be provided for the \enquote{conditional} case by replacing the distributions by their conditional counterparts.
+
+\begin{definition}[Shannon Entropy]
+  The entropy of a random variable is defined as
+  \begin{align*}
+    H(X) \coloneqq - \mathbb{E}_{P^{X}}[\log(p(X))] = - \int_{\R^{d}}\log p(x)p(x) dx,
+  \end{align*}
+  where $p(x)$ is the density of $X$.
+\end{definition}
+
+\begin{definition}[Mutual Information (\cite{Gao_2019})]
+  Mutual information of two random variables is defined as
+  \begin{align*}
+    I(Z, X) \coloneqq H(X) + H(Z) - H(X, Z) = H(Z) - H(Z \mid X).
+  \end{align*}
+\end{definition}
 
 One key concept used throughout the paper to push models towards learning disentagled representations is that of \textit{Total Correlation} of a random vector.
-
-\begin{definition}[Mutual Information]
-  TODO
-\end{definition}
 
 \begin{definition}[Total Correlation]
   For $Z \in \R^{m}, m \in \N$ we call
   \begin{align*}
-    TC(z) \coloneqq D_{KL}(p(z) \mid \prod_{i=1}^{m}p(z_{i}))
+    TC(Z) \coloneqq D_{KL}(p(z) \mid \prod_{i=1}^{m}p(z_{i})).
   \end{align*}
   the \textit{Total Correlation} of $Z$. Moreover, we define
   \begin{align*}
-    TC(z \mid x) \coloneqq D_{KL}(p(z \mid x) \mid \prod_{i=1}^{m}p(z_{i} \mid x))
+    TC(Z \mid X) \coloneqq D_{KL}(p(z \mid x) \mid \prod_{i=1}^{m}p(z_{i} \mid x)).
   \end{align*}
   as the \textit{Conditional Total Correlation} of $Z$ given $X$.
 \end{definition}
-Intuitively, total correlation of a random vector captures the amount of information shared among the single components of the vector. Some authors use the concept of total correlation to define disentanglement. Others make clear, that just relying on this concept for the definition of disentanglement does not suffice. (TODO: add sources or explain)
+
+\begin{remark}[Interpretation]
+  The concepts can be interpreted as follows:
+  \begin{itemize}
+    \item The entropy of a random variable quantifies the randomness/ uncertainty in its distribution.
+    \item Mutual information of 2 rvs yields the reduction of uncertainty in one random variable given the other random variable.
+    \item TC measures the amount of information shared among the rvs. It is a generalization of MI to more than 2 rvs.
+  \end{itemize}
+\end{remark}
+
+ Some authors use TC to define disentanglement. Others make clear, that just relying on this concept for the definition of disentanglement does not suffice. (TODO: add sources or explain)
 
 $TC$ is however used as part of the objective function (\cite{FactorVAE}) or as in the paper at hand, as a foundation to derive a more suitable lower bound to optimize in order to learn disentagled representations.
-
-
-
-
 
 \section{Approach}
 The starting point for the derivation of the objective is the joint correlation of the data and the learned representation and a convex lower bound thereof.
 \begin{definition}[Joint Total Correlation]
   We define the joint total correlation as
   \begin{align*}
-    TC(z, x) \coloneqq TC(Z) - TC(z \mid x)
+    TC(Z, X) \coloneqq TC(Z) - TC(Z \mid X)
   \end{align*}
 \end{definition}
 By breaking down $TC(z, x)$ using concepts from information theory, we may gain introspection into the usefulness of this as an objective to learn disentangled representations.
 
 
 \begin{proposition}[TC in terms of Mutual Information]
-  Here.
+  \begin{align*}
+    TC(Z, X) = (\sum_{i=1}^{m}I(Z_{k}, X)) - I(Z,X).
+  \end{align*}
 \end{proposition}
+Thus maximizing $TC(Z,X)$ is equivalent to maximizing the information shared between single components $Z_{i}$ of $Z$.
+Moreover, by writing $I(Z,X) = I(Z) - I(Z \mid X)$ we see that at the same time, independence of $Z$ given $X$ is promoted.
+In the literature $I(Z,X)$ is called the \enquote{Variation Information Bottleneck}(VIB).
 
-
-\begin{proposition}[TC in terms of Conditional Mutual Information]
-  Here.
+\begin{proposition}[TC in terms of Conditional Mutual Information \cite{Gao_2019}]
+  \begin{align*}
+    TC(z, x) = \frac{1}{m}\sum_{i=1}^{m}(K-1)I(Z_{i}, X) - I(Z_{\neq i}, X \mid Z_{i}).
+  \end{align*}
 \end{proposition}
+From this representation, we see that maximizing joint total correlation is equivalent to maximizing the terms of the form $I(Z_{\neq i}, X \mid Z_{i})$. Intuitively this promotes balance of information related to each single variable. This term is called the \enquote{Conditional Information Bottleneck}(CEB).
+
+\begin{remark}[How maximizing TC yields disentangled representations]
+  TODO
+\end{remark}
+
+\begin{definition}[Convex combination lower bound]
+  TODO derivation of final bound used in optimization
+\end{definition}
 
 
-
-
-
-\section{Results}
+\section{Experiments \& Results}
+\begin{itemize}
+  \item baselines, datasets, evaluation metrics
+\end{itemize}
 
 \section{Discussion and Conclusion}
+The authors demonstrated TC-VAE's capability of detecting OOD generative factors. They raised awareness of the need to further investigate the effects of unbalanced datasets on models' capabilities to learn disentagled representations.
+A first step in this direction was taken in the evaluation of baseline models as well as the new model on the custom-designed unbalanced 3D-shapes dataset.
 
 
 
@@ -232,34 +271,6 @@ More information about this disclosure can be found on the JMLR website.}
 In this appendix we prove the following theorem from
 Section~6.2:
 
-\noindent
-{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
-not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
-dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
-which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
-respective empirical mutual information values based on the sample
-$\dataset$. Then
-\[
-	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
-\]
-with equality only if $u$ is identically 0.} \hfill\BlackBox
-
-\section{}
-
-\noindent
-{\bf Proof}. We use the notation:
-\[
-P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
-P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
-\]
-These values represent the (empirical) probabilities of $v$
-taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
-by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
-
-{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
-
-
-\vskip 0.2in
 \bibliography{sample}
 
 \end{document}
