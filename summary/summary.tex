@@ -255,14 +255,41 @@ The 2 representations allow for the derivation of 2 distinct lower bounds to $TC
 \end{definition}
 
 
-
 \section{Experiments \& Results}
-A comparison with Factor-VAE [\cite{FactorVAE}] and $\beta$-VAE [\cite{betaVAE}] with similar encoder/ decoder models on numerous balanced datasets - illustrating latent space traversals on the qualitative side and comparing the results of training with the DCI [\cite{DCI}] and the WSEPIN [\cite{WSEPIN}] metrics quantitatively - has demonstrated the following TC-VAE's capability of uncovering OOD data generative factors and truely disentangled representations. On the balanced dataset, the proposed model outperformed the baselines consistently.
+A comparison with Factor-VAE [\cite{FactorVAE}] and $\beta$-VAE [\cite{betaVAE}] with similar encoder/ decoder models on numerous balanced datasets - illustrating latent space traversals on the qualitative side and comparing the results of training with the DCI [\cite{DCI}] and the WSEPIN [\cite{WSEPIN}] metrics quantitatively - has demonstrated TC-VAE's capability of uncovering OOD data generative factors and truely disentangled representations. On the balanced dataset, the proposed model outperformed the baselines consistently.
 
-TODO illustrations here
+\newpage
 
-Similar experiments on the custom-designed unbalanced dataset (U3D shapes) have illustrated the decrease of performance of all the proposed models in learning disentagled representations. It also helped manifest the problem which arises from enforcing balanced representations on an unbalanced dataset with TC-VAE.
+\begin{figure}[h]
+  \captionsetup{justification=centering}
+  \caption{Results on balanced datasets.}
+  \captionsetup[subfigure]{justification=centering}
+  \hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=9cm, height=7cm]{quantitative_balanced}
+    \captionsetup{justification=centering}
+    \caption{Comparison on balanced datasets. \textbf{best score}, \underline{2nd best score}.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=9cm, height=7cm]{latent_traversals_TC.png}
+    \captionsetup{justification=centering}
+    \caption{Latent space traversals of TC-VAE. Model uncovered 2 OOD generative factors}
+    \centering
+  \end{subfigure}
+  \hfill
+\end{figure}
 
+Similar experiments on the custom-designed unbalanced dataset (U3D shapes) have illustrated the decrease of performance of all the proposed models in learning disentagled representations. It also helped manifest the problem which arises from enforcing balanced representations on an unbalanced dataset with TC-VAE. Namely, enforcing this constraint results in worse perfomance in terms of disentaglement.
+
+\begin{figure}[h]
+  \includegraphics[width=9cm, height=8 cm]{quantitative_unbalanced}
+  \captionsetup{justification=centering}
+  \caption{Comparison on unbalanced datasets. \textbf{best score}, \underline{2nd best score}.}
+  \centering
+\end{figure}
+
+\newpage
 \section{Discussion and Conclusion}
 The authors demonstrated TC-VAE's capability of detecting OOD generative factors. They raised awareness of the need to further investigate the effects of unbalanced datasets on models' capabilities to learn disentagled representations.
 A first step in this direction was taken in the evaluation of baseline models as well as the new model on the custom-designed unbalanced 3D-shapes dataset.
