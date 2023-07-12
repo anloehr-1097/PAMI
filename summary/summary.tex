@@ -96,7 +96,7 @@
 % Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
 
 \usepackage{lastpage}
-\jmlrheading{23}{2022}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Author One and Author Two}
+%\jmlrheading{23}{2023}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{Andreas Loehr}
 
 % Short headings should be running head and authors last names
 
@@ -125,24 +125,25 @@
 \end{abstract}
 
 \section{Introduction}
+Note to the reader: Though the page limit exceeds 4 pages, be aware that equation environments take up more space that plain text.
+
 \subsection{Motivation and background}
-A \textit{good} latent representation of a given data distribution oftentimes yields a solid foundation for generative tasks as well as downstream tasks in supervised learning. It is widely accepted that learning such representations in an unsupervised fashion benefits a variety of subfields of machine learning [TODO BETTER INTRO HERE].
+A \textit{good} latent representation of a data distribution oftentimes yields a solid foundation for generative tasks as well as downstream tasks in supervised learning. It is widely accepted that learning such representations in an unsupervised fashion benefits a variety of subfields of machine learning [TODO BETTER INTRO HERE].
 The goodness of a representation is characterized in terms of its degree of disentanglement. A representation is said to be disentangled if each component in the learned latent vector corresponds to a single generative factor of the data. Even though a unified formal / mathematical definition of disentanglement is nowhere to be found, different definitions of disentaglment of various authors do converge and seem to capture the same concept.
 
 Various attempts have been made to generate disentagled representations. The model architectures predominantly being inspired by that of a Variational Auto Encoder (VAE), the idea in most approaches is to modify the optimization objective such that the distribution of the latent vector conditioned on the data factorizes.
-Quantification of the learned latent representation (distribution) is usually done on toy datasets with a small amount of known generative factors. The evaluation is done qualitatively inspecting the latent space traversals obtained from manipulating single latent variables of a representation and quantitatively leveraging a set of metrics which are designed to capture the degree of disentangled of a representation.
+Evaluation of the learned latent representation (distribution) is usually done on toy datasets with a small amount of known generative factors. The evaluation is done qualitatively inspecting the latent space traversals obtained from manipulating single latent variables of a representation and quantitatively leveraging a set of metrics which are designed to capture the degree of disentangled of a representation.
 
 \subsection{Contributions}
-The contributions of the authors of the paper are threefold. On the one hand, they propose a new objective function to minimize during the training of a VAE. Their derived objective is a convex combination of 2 existing objectives which do have their roots in information theory and in theory promote learning disentagled representations.
+The contributions of the authors of the paper are threefold. On the one hand, they propose a new objective function to minimize during the training of a VAE.
 They demonstrate that, using their new objective in VAE training, their model is capable of uncovering generative factors which are not captured in the dataset - so called \enquote{Out of Distribution} (OOD) generative factors.
 On the other hand, they design a new dataset used for the evaluation of models learning data representations. Their dataset is only a slight modification of an existing dataset. More explicitly, they create an unbalanced version of the dataset, one generative factor being not uniformly distributed over the dataset as is common in the existing datasets.
 Moreover, they evaluate existing models on their newly designed dataset, examining the effects of the disbalance on the representations learned.
 
 \section{Background and Preliminary Work}
-For the remainder of the paper we use the following notation.
 \begin{itemize}
-  \item Let $X \in \R^{d}, Z \in \R^{m}, \hspace{0.1 cm} d,m \in \N$. Let $P^{X}, P^{Z}$ or $p(x), p(z)$ the distributions of $X$ respectively $Z$. As long as it is clear for the context, we might use $p(z)$ for the distribution as well as the density.
-  \item We call $X$ the data and $Z$ the latent representation. Usually, $m << d$. Latent representations are of much smaller dimension than the data.
+  \item Let $X \in \R^{d}, Z \in \R^{m}, \hspace{0.1 cm} d,m \in \N$. Let $P^{X}, P^{Z}$ or $p(x), p(z)$ the distributions of $X$ respectively $Z$. As long as it is clear from context, we might use $p(z)$ for the distribution as well as the density.
+  \item We call $X$ the data and $Z$ the latent representation. Usually, $m << d$.
   \item Conditional distributions are denoted as $P^{Z \mid X}$ or $p(z \mid x)$.
 \end{itemize}
 A major difficulty is to find a precise definition of disentanglement. Due to the lack of one such definition, a commonly used one is as follows.
@@ -158,14 +159,13 @@ We may break down the concept of disentaglement in terms of
 The authors take an information-theoretic approach to the derivation of their lower bound of the likelihood of the data. We thus introduce a range of concepts essential to the understanding of the results of the paper. Note that for all of the following definitions, an analogous definition can be provided for the \enquote{conditional} case by replacing the distributions by their conditional counterparts.
 
 \begin{definition}[Shannon Entropy]
-  The entropy of a random variable is defined as
+  The entropy of a random variable $X$ is defined as
   \begin{align*}
     H(X) \coloneqq - \mathbb{E}_{P^{X}}[\log(p(X))] = - \int_{\R^{d}}\log p(x)p(x) dx,
   \end{align*}
-  where $p(x)$ is the density of $X$.
 \end{definition}
 
-\begin{definition}[Mutual Information (\cite{Gao_2019})]
+\begin{definition}[Mutual Information - \cite{Gao_2018}]
   Mutual information of two random variables is defined as
   \begin{align*}
     I(Z, X) \coloneqq H(X) + H(Z) - H(X, Z) = H(Z) - H(Z \mid X).
@@ -175,13 +175,13 @@ The authors take an information-theoretic approach to the derivation of their lo
 One key concept used throughout the paper to push models towards learning disentagled representations is that of \textit{Total Correlation} of a random vector.
 
 \begin{definition}[Total Correlation]
-  For $Z \in \R^{m}, m \in \N$ we call
+  We call
   \begin{align*}
-    TC(Z) \coloneqq D_{KL}(p(z) \mid \prod_{i=1}^{m}p(z_{i})).
+    TC(Z) \coloneqq D_{KL}(p(z) \mid \prod_{k=1}^{m}p(z_{k})).
   \end{align*}
   the \textit{Total Correlation} of $Z$. Moreover, we define
   \begin{align*}
-    TC(Z \mid X) \coloneqq D_{KL}(p(z \mid x) \mid \prod_{i=1}^{m}p(z_{i} \mid x)).
+    TC(Z \mid X) \coloneqq \mathbb{E}_{p(X)}[D_{KL}(p(z \mid x) \mid \prod_{k=1}^{m}p(z_{k} \mid x))].
   \end{align*}
   as the \textit{Conditional Total Correlation} of $Z$ given $X$.
 \end{definition}
@@ -200,45 +200,68 @@ One key concept used throughout the paper to push models towards learning disent
 $TC$ is however used as part of the objective function (\cite{FactorVAE}) or as in the paper at hand, as a foundation to derive a more suitable lower bound to optimize in order to learn disentagled representations.
 
 \section{Approach}
+The goal is to optimize an encoder model such that the random variable $Z$ with distribution $q_{\theta}(z \mid x)$ is disentangled. The decoder model yields a distribution $p_{\phi}(x \mid z)$. For background see the literature on Variational Autoencoders [\cite{VAE_foundational}, \cite{VAE_explained}].
+
 The starting point for the derivation of the objective is the joint correlation of the data and the learned representation and a convex lower bound thereof.
 \begin{definition}[Joint Total Correlation]
   We define the joint total correlation as
   \begin{align*}
-    TC(Z, X) \coloneqq TC(Z) - TC(Z \mid X)
+    TC_{\theta}(Z, X) \coloneqq TC_{\theta}(Z) - TC_{\theta}(Z \mid X)
   \end{align*}
 \end{definition}
-By breaking down $TC(z, x)$ using concepts from information theory, we may gain introspection into the usefulness of this as an objective to learn disentangled representations.
+By breaking down $TC_{\theta}(Z, X)$ using concepts from information theory, we may gain introspection into the usefulness of this as an objective to learn disentangled representations.
 
 
 \begin{proposition}[TC in terms of Mutual Information]
   \begin{align*}
-    TC(Z, X) = (\sum_{i=1}^{m}I(Z_{k}, X)) - I(Z,X).
+    TC_{\theta}(Z, X) = (\sum_{k=1}^{m}I_{\theta}(Z_{k}, X)) - I_{\theta}(Z,X).
   \end{align*}
 \end{proposition}
-Thus maximizing $TC(Z,X)$ is equivalent to maximizing the information shared between single components $Z_{i}$ of $Z$.
-Moreover, by writing $I(Z,X) = I(Z) - I(Z \mid X)$ we see that at the same time, independence of $Z$ given $X$ is promoted.
-In the literature $I(Z,X)$ is called the \enquote{Variation Information Bottleneck}(VIB).
+Thus maximizing $TC_{\theta}(Z,X)$ is equivalent to maximizing the information shared between single components $z_{k}$ of $Z$.
+Moreover, by writing $I_{\theta}(Z,X) = I_{\theta}(Z) - I_{\theta}(Z \mid X)$ we see that at the same time, independence of $Z$ given $X$ is promoted.
+In the literature $I_{\theta}(Z,X)$ is called the \enquote{Variation Information Bottleneck}(VIB).
 
-\begin{proposition}[TC in terms of Conditional Mutual Information \cite{Gao_2019}]
+\begin{proposition}[TC in terms of Conditional Mutual Information - \cite{Gao_2018}]
   \begin{align*}
-    TC(z, x) = \frac{1}{m}\sum_{i=1}^{m}(K-1)I(Z_{i}, X) - I(Z_{\neq i}, X \mid Z_{i}).
+    TC_{\theta}(Z, X) = \frac{1}{m}\sum_{k=1}^{m}(m-1)I_{\theta}(Z_{k}, X) - I_{\theta}(Z_{\neq k}, X \mid Z_{k}).
   \end{align*}
 \end{proposition}
-From this representation, we see that maximizing joint total correlation is equivalent to maximizing the terms of the form $I(Z_{\neq i}, X \mid Z_{i})$. Intuitively this promotes balance of information related to each single variable. This term is called the \enquote{Conditional Information Bottleneck}(CEB).
+From this representation, we see that maximizing joint total correlation is equivalent to minimizing the terms of the form $I_{\theta}(Z_{\neq k}, X \mid z_{k})$ while maximizing $I_{\theta}(z_{k}, X)$.
+Intuitively this promotes balance of information related to each single variable. This term is called the \enquote{Conditional Information Bottleneck}(CEB).
 
-\begin{remark}[How maximizing TC yields disentangled representations]
-  TODO
-\end{remark}
+Melting the pieces together, it becomes clear, that maximizing the joint total correlation has 3 effects.
+\begin{enumerate}
+  \item Single latent variables are encouraged to share information with the data.
+  \item Independence of the latent representation conditional on the data is promoted.
+  \item Prevention of a subset of latent variables sharing all of the information with the data but rather promoting each latent variable to share an equally weighted amount of information with the data.
+\end{enumerate}
+This implies that optimizing $TC_{\theta}(Z,X)$ yields disentagled latent representations and thus it is an adequate optimziation objective for the task at hand.
 
-\begin{definition}[Convex combination lower bound]
-  TODO derivation of final bound used in optimization
+The 2 representations allow for the derivation of 2 distinct lower bounds to $TC_{\theta}(Z, X)$ which are combined as a convex combination resulting in the final lower bound used in the training of the \textbf{TC-VAE}.
+
+\begin{definition}[Final Optimization Objective]
+  \begin{align*}
+    \begin{split}
+      TC_{\theta}(Z, X) \geq & \mathbb{E}_{q_{\theta}(z \mid x)}[\log p_{\phi}(x \mid z)] \\
+      & - \frac{\alpha}{m - \alpha} \sum_{k=1}^{m}D_{KL}(q_{\theta}(z_{k} \mid x) \Vert r_{p}(z_{p} \mid x)) \\
+      & - \frac{1 - \alpha}{1 - \frac{\alpha}{m}} D_{KL}(q_{\theta}(z \mid x) \Vert r(z)), \text{ where }
+    \end{split}
+  \end{align*}
+  \begin{itemize}
+    \item $\alpha$ is a hyperparamter used when forming the convex combination,
+    \item  $r(z)$ is a $\mathcal{N}(0, I)$ distribution,
+    \item $r_{p}(z_{p} \mid x)$ is  $\mathcal{N}(\mu_{p}, \sigma_{p}I)$, $\mu_{p}, \sigma_{p}$ as given in the original paper.
+  \end{itemize}
 \end{definition}
 
 
+
 \section{Experiments \& Results}
-\begin{itemize}
-  \item baselines, datasets, evaluation metrics
-\end{itemize}
+A comparison with Factor-VAE [\cite{FactorVAE}] and $\beta$-VAE [\cite{betaVAE}] with similar encoder/ decoder models on numerous balanced datasets - illustrating latent space traversals on the qualitative side and comparing the results of training with the DCI [\cite{DCI}] and the WSEPIN [\cite{WSEPIN}] metrics quantitatively - has demonstrated the following TC-VAE's capability of uncovering OOD data generative factors and truely disentangled representations. On the balanced dataset, the proposed model outperformed the baselines consistently.
+
+TODO illustrations here
+
+Similar experiments on the custom-designed unbalanced dataset (U3D shapes) have illustrated the decrease of performance of all the proposed models in learning disentagled representations. It also helped manifest the problem which arises from enforcing balanced representations on an unbalanced dataset with TC-VAE.
 
 \section{Discussion and Conclusion}
 The authors demonstrated TC-VAE's capability of detecting OOD generative factors. They raised awareness of the need to further investigate the effects of unbalanced datasets on models' capabilities to learn disentagled representations.
@@ -248,29 +271,25 @@ A first step in this direction was taken in the evaluation of baseline models as
 
 % Acknowledgements and Disclosure of Funding should go at the end, before appendices and references
 
-\acks{All acknowledgements go at the end of the paper before appendices and references.
-Moreover, you are required to declare funding (financial activities supporting the
-submitted work) and competing interests (related financial activities outside the submitted work).
-More information about this disclosure can be found on the JMLR website.}
+%$\acks{All acknowledgements go at the end of the paper before appendices and references.
+%Moreover, you are required to declare funding (financial activities supporting the
+%$submitted work) and competing interests (related financial activities outside the submitted work).
+%$More information about this disclosure can be found on the JMLR website.}
 
 % Manual newpage inserted to improve layout of sample file - not
 % needed in general before appendices/bibliography.
 
 \newpage
 
-\appendix
-\section{}
-\label{app:theorem}
+%\appendix
+%\label{app:theorem}
 
 % Note: in this sample, the section number is hard-coded in. Following
 % proper LaTeX conventions, it should properly be coded as a reference:
 
 %In this appendix we prove the following theorem from
 %Section~\ref{sec:textree-generalization}:
-
-In this appendix we prove the following theorem from
-Section~6.2:
-
-\bibliography{sample}
+\nocite{*}
+\bibliography{summary}
 
 \end{document}
